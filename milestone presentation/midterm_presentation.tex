@@ -1,0 +1,227 @@
+\documentclass{beamer}
+
+\mode<presentation> {
+
+% The Beamer class comes with a number of default slide themes
+% which change the colors and layouts of slides. Below this is a list
+% of all the themes, uncomment each in turn to see what they look like.
+
+%\usetheme{default}
+%\usetheme{AnnArbor}
+%\usetheme{Antibes}
+%\usetheme{Bergen}
+%\usetheme{Berkeley}
+%\usetheme{Berlin}
+%\usetheme{Boadilla}
+%\usetheme{CambridgeUS}
+%\usetheme{Copenhagen}
+%\usetheme{Darmstadt}
+%\usetheme{Dresden}
+%\usetheme{Frankfurt}
+%\usetheme{Goettingen}
+%\usetheme{Hannover}
+%\usetheme{Ilmenau}
+%\usetheme{JuanLesPins}
+%\usetheme{Luebeck}
+\usetheme{Madrid}
+%\usetheme{Malmoe}
+%\usetheme{Marburg}
+%\usetheme{Montpellier}
+%\usetheme{PaloAlto}
+%\usetheme{Pittsburgh}
+%\usetheme{Rochester}
+%\usetheme{Singapore}
+%\usetheme{Szeged}
+%\usetheme{Warsaw}
+
+% As well as themes, the Beamer class has a number of color themes
+% for any slide theme. Uncomment each of these in turn to see how it
+% changes the colors of your current slide theme.
+
+%\usecolortheme{albatross}
+%\usecolortheme{beaver}
+%\usecolortheme{beetle}
+%\usecolortheme{crane}
+%\usecolortheme{dolphin}
+%\usecolortheme{dove}
+%\usecolortheme{fly}
+%\usecolortheme{lily}
+%\usecolortheme{orchid}
+%\usecolortheme{rose}
+%\usecolortheme{seagull}
+%\usecolortheme{seahorse}
+%\usecolortheme{whale}
+%\usecolortheme{wolverine}
+
+%\setbeamertemplate{footline} % To remove the footer line in all slides uncomment this line
+%\setbeamertemplate{footline}[page number] % To replace the footer line in all slides with a simple slide count uncomment this line
+
+%\setbeamertemplate{navigation symbols}{} % To remove the navigation symbols from the bottom of all slides uncomment this line
+}
+
+\usepackage{graphicx} % Allows including images
+\usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
+
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\title[Google Home]{Google Home Midterm Presentation} % The short title appears at the bottom of every slide, the full title is only on the title page
+
+\author{Mehmet Kardan, Hanna Köb, Mathias Meinschad, Daniel Linter} % Your name
+\institute[UCLA] % Your institution as it will appear on the bottom of every slide, may be shorthand to save space
+{
+University of Innsbruck - SIT \\ % Your institution for the title page
+}
+\date{\today} % Date, can be changed to a custom date
+
+\begin{document}
+
+\begin{frame}
+\titlepage % Print the title page as the first slide
+\end{frame}
+
+\begin{frame}
+\frametitle{Overview} % Table of contents slide, comment this block out to remove it
+\tableofcontents % Throughout your presentation, if you choose to use \section{} and \subsection{} commands, these will automatically be printed on this slide as an overview of your presentation
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+%	PRESENTATION SLIDES
+%----------------------------------------------------------------------------------------
+
+%------------------------------------------------
+\section{Overview}
+
+\begin{frame}
+\frametitle{Overview}
+\begin{center}
+\includegraphics[scale=0.35]{pictures/google-home.png} 
+\end{center}
+\begin{itemize}
+\item founded by Google in 2016
+\item development through googles developer console and Dialogflow
+\item creating skills pretty easy
+\item no programming skill required
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Execution Path}
+\begin{center}
+\includegraphics[scale=0.2]{pictures/execution-path.png}
+\end{center}
+\end{frame}
+
+%------------------------------------------------
+
+\section{Developer Console}
+
+\begin{frame}
+\frametitle{Developer Console}
+\begin{center}
+\includegraphics[scale=0.23]{pictures/developer-console.png}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Developer Console cont'd}
+\begin{center}
+\begin{itemize}
+\item gives an overview of your skill
+\item specifies general settings
+\item gives the user the ability to test their skill
+\item deployment of the skill
+\end{itemize}
+\end{center}
+\end{frame}
+
+%------------------------------------------------
+
+\section{Dialogflow}
+
+\begin{frame}
+\frametitle{Dialogflow}
+\begin{block}{Specific Settings}
+\begin{itemize}
+\item Intents
+\begin{itemize}
+\item simple messaging objects 
+\item describes what smart home Action to perform
+\end{itemize}
+\item Entities
+\begin{itemize}
+\item smart objects like time or colours
+\item can be customised
+\end{itemize}
+\item Knowledge Base
+\begin{itemize}
+\item complement defined intents
+\item used to find automated responses
+\end{itemize}
+\end{itemize}
+\end{block}
+\end{frame}
+
+
+%------------------------------------------------
+
+\section{Intents}
+
+\begin{frame}
+\frametitle{Intents}
+\begin{center}
+\includegraphics[scale=0.23]{pictures/intents.png}
+\end{center}
+\end{frame}
+
+%------------------------------------------------
+
+\section{Entities}
+
+\begin{frame}
+\frametitle{Entities}
+\begin{center}
+\includegraphics[scale=0.23]{pictures/entities.png}
+\end{center}
+\end{frame}
+
+%------------------------------------------------
+
+\section{Knowledge Base}
+
+\begin{frame}
+\frametitle{Knowledge Base}
+\begin{block}{Problem}
+We need to somehow add the Knowledge Base from Group 1 into our skill.
+\end{block}
+
+
+\begin{block}{Solution}
+There is a Knowledge Base feature which is already implemented in Dialogflow however here we only can use documents like texts or csv files or pdfs. So we are not exactly sure how to handle this at the moment.
+\end{block}
+
+\end{frame}
+
+%------------------------------------------------
+
+\section{Live Demo}
+
+\begin{frame}
+\frametitle{Live Demo}
+\begin{center}
+{\fontsize{30}{40}\selectfont Live Demo}
+\end{center}
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}
+\begin{center}
+{\fontsize{30}{40}\selectfont Thank you for your attention!}
+\end{center}
+\end{frame}
+
+%------------------------------------------------
+
+\end{document} 
