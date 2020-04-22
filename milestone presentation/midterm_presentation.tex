@@ -61,6 +61,7 @@
 
 \usepackage{graphicx} % Allows including images
 \usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
+\usepackage[utf8]{inputenc}
 
 %----------------------------------------------------------------------------------------
 %	TITLE PAGE
@@ -99,12 +100,16 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 \includegraphics[scale=0.35]{pictures/google-home.png} 
 \end{center}
 \begin{itemize}
-\item founded by Google in 2016
-\item development through googles developer console and Dialogflow
-\item creating skills pretty easy
-\item no programming skill required
+\item Founded by Google in 2016
+\item Development through googles developer console and Dialogflow
+\item Creating skills pretty easy
+\item No programming skills required
 \end{itemize}
 \end{frame}
+
+%------------------------------------------------
+
+\section{Execution Path}
 
 \begin{frame}
 \frametitle{Execution Path}
@@ -128,10 +133,10 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 \frametitle{Developer Console cont'd}
 \begin{center}
 \begin{itemize}
-\item gives an overview of your skill
-\item specifies general settings
-\item gives the user the ability to test their skill
-\item deployment of the skill
+\item Gives an overview of your skill
+\item Specifies general settings
+\item Gives the user the ability to test their skill
+\item Deployment of the skill
 \end{itemize}
 \end{center}
 \end{frame}
@@ -142,22 +147,41 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 
 \begin{frame}
 \frametitle{Dialogflow}
-\begin{block}{Specific Settings}
+\begin{center}
+\begin{itemize}
+\item Service developed and provided by Google
+\item Natural language tool to create conversational user interfaces for apps, chatbots, etc.
+\item By adding 'Training phrases' Dialogflow automatically trains the machine learning model
+\end{itemize}
+\end{center}
+\end{frame}
+
+
+%------------------------------------------------
+
+
+\begin{frame}
+\frametitle{Dialogflow cont'd}
+\begin{block}{Concepts}
 \begin{itemize}
 \item Intents
 \begin{itemize}
-\item simple messaging objects 
-\item describes what smart home Action to perform
+\item Each intent describes an intent a user might have
+\item E.g. check prices, get opening hours or book a repair
+\item By communicating with the interface, Dialogflow classifies the user's intent and performs the associated action
+\item An intent can require some parameters such as a date in order to book a repair
 \end{itemize}
 \item Entities
 \begin{itemize}
-\item smart objects like time or colours
-\item can be customised
+\item Each intent parameter has a type and therefore belongs to an entity
+\item There are predefined system entities for dates, colors, adresses, etc.
+\item Define entities to make Dialogflow 'understand' your vocabulary
+\item E.g. Entity 'bike-type' with the instances road bike and mountain bike
 \end{itemize}
 \item Knowledge Base
 \begin{itemize}
-\item complement defined intents
-\item used to find automated responses
+\item Complement defined intents
+\item Used to find automated responses
 \end{itemize}
 \end{itemize}
 \end{block}
@@ -166,29 +190,45 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 
 %------------------------------------------------
 
-\section{Intents}
+\subsection{Intents}
 
 \begin{frame}
 \frametitle{Intents}
 \begin{center}
-\includegraphics[scale=0.23]{pictures/intents.png}
+\includegraphics[width=0.8\textwidth]{pictures/intent.png}
+
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Intents cont'd}
+\begin{center}
+\includegraphics[width=\textwidth]{pictures/intents.png}
+
 \end{center}
 \end{frame}
 
 %------------------------------------------------
 
-\section{Entities}
+\subsection{Entities}
 
 \begin{frame}
 \frametitle{Entities}
 \begin{center}
-\includegraphics[scale=0.23]{pictures/entities.png}
+\includegraphics[width=0.8\textwidth]{pictures/entities2.png}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Entities cont'd}
+\begin{center}
+\includegraphics[width=\textwidth]{pictures/entities.png}
 \end{center}
 \end{frame}
 
 %------------------------------------------------
 
-\section{Knowledge Base}
+\subsection{Knowledge Base}
 
 \begin{frame}
 \frametitle{Knowledge Base}
@@ -198,7 +238,7 @@ We need to somehow add the Knowledge Base from Group 1 into our skill.
 
 
 \begin{block}{Solution}
-There is a Knowledge Base feature which is already implemented in Dialogflow however here we only can use documents like texts or csv files or pdfs. So we are not exactly sure how to handle this at the moment.
+There is a Knowledge Base feature which is already implemented in Dialogflow. However here we only can use documents like texts or csv files or pdfs. So we are not exactly sure how to handle this at the moment.
 \end{block}
 
 \end{frame}
