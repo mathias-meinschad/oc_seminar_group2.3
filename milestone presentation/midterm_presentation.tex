@@ -101,7 +101,7 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 \end{center}
 \begin{itemize}
 \item Founded by Google in 2016
-\item Development through googles developer console and Dialogflow
+\item Development through Googles developer console and Dialogflow
 \item Creating skills pretty easy
 \item No programming skills required
 \end{itemize}
@@ -174,7 +174,7 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 \item Entities
 \begin{itemize}
 \item Each intent parameter has a type and therefore belongs to an entity
-\item There are predefined system entities for dates, colors, adresses, etc.
+\item There are predefined system entities for dates, colors, addresses, etc.
 \item Define entities to make Dialogflow 'understand' your vocabulary
 \item E.g. Entity 'bike-type' with the instances road bike and mountain bike
 \end{itemize}
@@ -239,6 +239,63 @@ We need to somehow add the Knowledge Base from Group 1 into our skill.
 
 \begin{block}{Solution}
 There is a Knowledge Base feature which is already implemented in Dialogflow. However here we only can use documents like texts or csv files or pdfs. So we are not exactly sure how to handle this at the moment.
+\end{block}
+
+\end{frame}
+
+%------------------------------------------------
+
+\subsection{Fulfillment}
+
+\begin{frame}
+\frametitle{Fulfillment}
+\begin{center}
+\includegraphics[width=\textwidth]{pictures/fulfillment_flow.png} 
+\end{center}
+\end{frame}
+
+%------------------------------------------------
+
+\subsection{Connecting to our GraphDB}
+
+\begin{frame}
+\frametitle{Connecting to our GraphDB}
+\begin{block}{Problem}
+Dialogflow doesn't allow direct connection to a database like Mycroft etc.
+\end{block}
+
+
+\begin{block}{Solution}
+\begin{itemize}
+\item Dialogflow sends a webhook request message that contains information about the matched intent, the action, the parameters, and the response defined for the intent.
+\item Our service then performs the needed database query.
+\item Our service sends back a webhook response containing the response to be sent to the end-user.
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+%------------------------------------------------
+
+\subsection{Webhook Service}
+
+\begin{frame}
+\frametitle{Webhook Service}
+\begin{block}{Features}
+\begin{itemize}
+\item Supports Mutual TLS authentication.
+\item Body of request and response is a simple JSON object.
+\item Supports contexts and sessions, follow-up events and custom payloads.
+\item Response can be a text, card, event or a Google Assistant response.
+\end{itemize}
+\end{block}
+
+
+\begin{block}{Limitations}
+\begin{itemize}
+\item Response must occur within 10 seconds for Google Assistant applications or 5 seconds for other application, else it will timeout. 
+\item The response must be less than or equal to 64 KiB in size.
+\end{itemize}
 \end{block}
 
 \end{frame}
