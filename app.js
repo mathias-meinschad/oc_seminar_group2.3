@@ -8,6 +8,7 @@ app.get('/', (req, res) => {
     const {ServerClient, ServerClientConfig} = require('graphdb').server;
     const {RDFMimeType} = require('graphdb').http;
     const {RepositoryClientConfig} = require('graphdb').repository;
+    const {SparqlXmlResultParser} = require('graphdb').SparqlXmlResultParser
     
     const serverConfig = new ServerClientConfig('http://graphdb.sti2.at:8080/', 0, {
         'Accept': RDFMimeType.SPARQL_RESULTS_JSON
