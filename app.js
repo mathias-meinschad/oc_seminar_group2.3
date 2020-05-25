@@ -21,6 +21,7 @@ app.get('/', (req, res) => {
         }
     }).catch(err => console.log(err));
 
+    const repositoryClientConfig = new RepositoryClientConfig(['http://graphdb.sti2.at:8080/'], {}, '', readTimeout, writeTimeout);
     const repo = server.getRepository('OCSS2020', repositoryClientConfig).then((rdfRepositoryClient) => {
         // rdfRepositoryClient is a configured instance of RDFRepositoryClient
     });
