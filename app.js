@@ -15,9 +15,7 @@ app.listen(port, () => {
 app.post('/testApp', (req, res) => {
     console.log('Received call from google assistant');
     
-    if (req.body.inputs && req.body.inputs.rawInputs && req.body.inputs.rawInputs.query) {
-        console.log(req.body.inputs.rawInputs.query);
-    }
+    console.log(req);
     
     console.log('Returning smth to google assistant');
     return res.json({
