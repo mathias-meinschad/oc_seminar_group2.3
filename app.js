@@ -3,20 +3,13 @@ var app = express();
 
 var port = process.env.PORT || 8080;
 
-app.set('view engine')
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
-// set the home page route
-app.set('view engine', 'ejs');
+app.get('/', (req, res) => {
+	res.status(200).send('Server is working.')
+})
 
-// make express look in the public directory for assets (css/js/img)
-app.use(express.static(__dirname + '/public'));
-
-// set the home page route
-app.get('/', function(req, res) {
-    // ejs render automatically looks in the views folder
-    res.render('index');
-});
-
-app.listen(port, function() {
-    console.log('Our app is running on http://localhost:' + port);
-});
+app.listen(port, () => {
+	console.log(`🌏 Server is running at https://intelligent-textbook.herokuapp.com:${port}`)
+})
