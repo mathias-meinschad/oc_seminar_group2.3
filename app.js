@@ -19,7 +19,7 @@ app.post('/testApp', (req, res) => {
     
     console.log('Returning smth to google assistant');
     return res.json({
-        fulfillmentText: 'Check that out, this response is from heroku'
+        fulfillmentText: 'Check that out, this response is from heroku',
         source: 'getmovie'
       })
 })
