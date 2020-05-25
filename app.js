@@ -11,3 +11,27 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
 	console.log(`🌏 Server is running at https://intelligent-textbook.herokuapp.com:${port}`)
 })
+
+app.post('/testApp', (req, res) => {
+    console.log('Received call from google assistant');
+    
+    if (req.body.json.inputs && req.body.json.inputs.rawInputs && req.body.json.inputs.rawInputs.query) {
+        console.log(req.body.json.inputs.rawInputs.query);
+    }
+    
+    console.log('Returning smth to google assistant');
+    return res.json({
+        "expectUserResponse": false,
+        "finalResponse": {
+            "richResponse": {
+            "items": [
+                {
+                "simpleResponse": {
+                    "textToSpeech": "Good bye"
+                }
+                }
+            ]
+            }
+        }
+    })
+})
