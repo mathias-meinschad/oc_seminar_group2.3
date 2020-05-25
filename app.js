@@ -7,6 +7,7 @@ var port = process.env.PORT || 8080;
 app.get('/', (req, res) => {
     const {ServerClient, ServerClientConfig} = require('graphdb').server;
     const {RDFMimeType} = require('graphdb').http;
+    const {RepositoryClientConfig} = require('graphdb').repository;
     
     const serverConfig = new ServerClientConfig('http://graphdb.sti2.at:8080/', 0, {
         'Accept': RDFMimeType.SPARQL_RESULTS_JSON
@@ -16,15 +17,33 @@ app.get('/', (req, res) => {
     server.hasRepository('OCSS2020').then(exists => {
         if (exists) {
             // repository exists -> delete it for example
-            console.log('holy shit this works what the fuck is happening?')
+            console.log('DB exits')
         }
     }).catch(err => console.log(err));
 
+    const repo = server.getRepository('OCSS2020', repositoryClientConfig).then((rdfRepositoryClient) => {
+        // rdfRepositoryClient is a configured instance of RDFRepositoryClient
+    });
 
+    repo.registerParser(new SparqlXmlResultParser());     
+      
+    const payload = new GetQueryPayload()
+        .setQuery('ask { ?person schema:description ?name . } limit 100 ')
+        .setQueryType(QueryType.ASK)
+        .setResponseType(RDFMimeType.BOOLEAN_RESULT);
+ 
+        repo.registerParser(new SparqlJsonResultParser());
     
+    repo.query(payload).then((data) => {
+        if (data) {
+            console.log("its true");
+        } else {
+            console.log("its false");
+        }
+    });
+
+
     res.status(200).send('Server is working.')
-    
-
 })
 
 app.listen(port, () => {
