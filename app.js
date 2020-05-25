@@ -16,6 +16,7 @@ app.get('/', (req, res) => {
     server.hasRepository('OCSS2020').then(exists => {
         if (exists) {
             // repository exists -> delete it for example
+            console.log('holy shit this works what the fuck is happening?')
         }
     }).catch(err => console.log(err));
 
