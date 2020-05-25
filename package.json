@@ -13,7 +13,8 @@
     "author": "mathias-meinschad",
     "license": "MIT",
     "dependencies": {
-      "express": "~4.9.8"
+      "express": "~4.9.8",
+      "graphdb": "1.2.0"
     },
     "engines": {
         "node": "10.x"

@@ -5,7 +5,25 @@ var port = process.env.PORT || 8080;
 
 
 app.get('/', (req, res) => {
-	res.status(200).send('Server is working.')
+    const {ServerClient, ServerClientConfig} = require('graphdb').server;
+    const {RDFMimeType} = require('graphdb').http;
+    
+    const serverConfig = new ServerClientConfig('http://http://graphdb.sti2.at:8080/', 0, {
+        'Accept': RDFMimeType.SPARQL_RESULTS_JSON
+    });
+    const server = new ServerClient(serverConfig);
+
+    server.hasRepository('OCSS2020').then(exists => {
+        if (exists) {
+            // repository exists -> delete it for example
+        }
+    }).catch(err => console.log(err));
+
+
+    
+    res.status(200).send('Server is working.')
+    
+
 })
 
 app.listen(port, () => {
