@@ -23,22 +23,25 @@ app.get('/', (req, res) => {
 
     const readTimeout = 30000;
     const writeTimeout = 30000;
-    const repoconfig = new RepositoryClientConfig(['http://graphdb.sti2.at:8080/OCSS2020'], {
-        'Accept': RDFMimeType.TURTLE
-    }, '', readTimeout, writeTimeout);
-    const repository = new RDFRepositoryClient(repoconfig);
+    const repositoryClientConfig = new RepositoryClientConfig(['http://graphdb.sti2.at:8080/'], {}, '', readTimeout, writeTimeout);
+    const repo = server.getRepository('OCSS2020', repositoryClientConfig).then((rdfRepositoryClient) => {
+        // rdfRepositoryClient is a configured instance of RDFRepositoryClient
+    });
 
-    repository.registerParser(new SparqlXmlResultParser());
-
+      
     const payload = new GetQueryPayload()
-      .setQuery('select * where {?s ?p ?o}')
-      .setQueryType(QueryType.SELECT)
-      .setResponseType(RDFMimeType.SPARQL_RESULTS_XML)
-      .setLimit(100);
-
-    repository.query(payload).then((stream) => {
-        stream.on('data', (bindings) => {});
-        stream.on('end', () => {});
+        .setQuery('ask { ?person schema:description ?name . } limit 100 ')
+        .setQueryType(QueryType.ASK)
+        .setResponseType(RDFMimeType.BOOLEAN_RESULT);
+ 
+    repo.registerParser(new SparqlJsonResultParser());
+    
+    repo.query(payload).then((data) => {
+        if (data) {
+            console.log("its true");
+        } else {
+            console.log("its false");
+        }
     });
 
 
