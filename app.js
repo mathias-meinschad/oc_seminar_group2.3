@@ -3,72 +3,49 @@ var app = express();
 
 var port = process.env.PORT || 8080;
 
+const username = 'oc1920';
+const password = 'Oc1920!';
+const auth = 'Basic ' + Buffer.from(username + ':' + password).toString('base64');
 
+const https = require('https');
 
+var options = {
+    hostname: 'graphdb.sti2.at',
+    path: '',
+    method: 'GET',
+    headers: {
+        Authorization: auth
+    }
+}
 
 app.get('/', (req, res) => {
-    const {ServerClient, ServerClientConfig} = require('graphdb').server;
-    const {RDFMimeType} = require('graphdb').http;
-    const {RepositoryClientConfig} = require('graphdb').repository;
-    const {SparqlJsonResultParser} = require('graphdb').parser;
-    const {GetQueryPayload, QueryType} = require('graphdb').query;
+    options.path = '/repositories/OCSS2020?query=PREFIX+schema%3A+%3Chttp%3A%2F%2Fschema.org%2F%3E+select+%3Fname+where+%7B+%3Fperson+schema%3Aname+%3Fname+.%7D'
     
-    const serverConfig = new ServerClientConfig('http://graphdb.sti2.at:8080/', 0, {
-        'Accept': RDFMimeType.SPARQL_RESULTS_JSON
+    https.get(options, (resp) => {    
+        var data = ''
+
+        // A chunk of data has been recieved.
+        resp.on('data', (chunk) => {
+            data += chunk;
+        });
+    
+        // The whole response has been received. Print out the result.
+        resp.on('end', () => {
+            console.log(data);
+        });
+    }).on("error", (err) => {
+        console.log("Error: " + err.message);
     });
-    const server = new ServerClient(serverConfig);
-
-    server.hasRepository('OCSS2020').then(exists => {
-        if (exists) {
-            // repository exists -> delete it for example
-            console.log('DB exits')
-
-            const readTimeout = 30000;
-            const writeTimeout = 30000;
-            const repositoryClientConfig = new RepositoryClientConfig(['http://graphdb.sti2.at:8080/repositories/OCSS2020'], {}, '', readTimeout, writeTimeout);
-            server.getRepository('OCSS2020',repositoryClientConfig).then(function(repository) {  
-
-                // console.log('REPO:', repository);
-                repository.registerParser(new SparqlJsonResultParser());
-
-                const payload = new GetQueryPayload()
-                  .setQuery('select * where {?s ?p ?o}')
-                  .setQueryType(QueryType.SELECT)
-                  .setResponseType(RDFMimeType.SPARQL_RESULTS_XML)
-                  .setLimit(100);
-
-                return repository.query(payload);
-
-           }).then(function(stream) {
-            stream.on('data', (bindings) => {
-                // the bindings stream converted to data objects with the registered parser
-              });
-              stream.on('end', () => {
-                // handle end of the stream
-              });
-            })
-            .catch(function(error) {
-                console.log('ERROR', error);
-            });
-
-            }
-    }).catch(err => console.log(err));
-
-    res.status(200).send('Server is working.')
+    
+    res.status(200).send("Server is running")
 })
 
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
-});
+app.listen(port, () => {
+	console.log(`🌏 Server is running at https://intelligent-textbook.herokuapp.com:${port}`)
+})
 
 app.post('/testApp', (req, res) => {
-    console.log('Received call from google assistant');
-    
-    console.log(req.body);
-    
-    console.log('Returning smth to google assistant');
     return res.json({
-        fulfillmentText: 'Check that out, this response is from heroku',
-        source: 'getmovie'
-      })
+        fulfillmentText: 'Check that out, this response is from heroku'
+    })
 })
