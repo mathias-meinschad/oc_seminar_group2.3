@@ -14,24 +14,6 @@ app.use(express.urlencoded({ extended: true }))
 
 
 app.get('/', (req, res) => {
-    options.path = '/repositories/OCSS2020?query=PREFIX+schema%3A+%3Chttp%3A%2F%2Fschema.org%2F%3E+select+%3Fname+where+%7B+%3Fperson+schema%3Aname+%3Fname+.%7D'
-    
-    https.get(options, (resp) => {    
-        var data = ''
-
-        // A chunk of data has been recieved.
-        resp.on('data', (chunk) => {
-            data += chunk;
-        });
-    
-        // The whole response has been received. Print out the result.
-        resp.on('end', () => {
-            console.log(data);
-        });
-    }).on("error", (err) => {
-        console.log("Error: " + err.message);
-    });
-    
     res.status(200).send("Server is running")
 })
 
