@@ -42,6 +42,8 @@ app.post('/testApp', (req, res) => {
 		}
 	}).then(response =>{
 
+        console.log(response)
+
 	let response_value = (typeof response.data.results.bindings[0].purpose === 'undefined') ? response.data.results.bindings[0].description.value 
 	: response.data.results.bindings[0].purpose.value;	// checks out if the return type is 'purpose' or 'description' and set the value for fulfilmment text..
 
