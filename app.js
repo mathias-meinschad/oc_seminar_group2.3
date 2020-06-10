@@ -39,7 +39,7 @@ app.post('/testApp', (req, res) => {
 	PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 	PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-	select * where { 
+	select ?comment where { 
 		?Concept schema:name ?name.
 		OPTIONAl {?Concept rdfs:comment ?comment.}
 		filter contains(LCASE(?name), LCASE("${entity_class}"))
