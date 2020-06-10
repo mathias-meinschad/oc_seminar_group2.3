@@ -57,12 +57,7 @@ app.post('/testApp', (req, res) => {
 	}).then(response =>{
         console.log(response.data)
 
-        let response_value = (typeof response.data.results.bindings[0].purpose === 'undefined') ? response.data.results.bindings[0].description.value 
-        : response.data.results.bindings[0].purpose.value;	// checks out if the return type is 'purpose' or 'description' and set the value for fulfilmment text..
-
-        //res.send(response.data);	returns the full JSON body, instead we can re-define a fulfillmentText that'll be shown on Google Assistant..
-
-        var fulfillText = 'Response from the webhook: ' + response_value;
+        var fulfillText = 'Response from the webhook: '
 
         return res.json({
             fulfillmentText: fulfillText,
