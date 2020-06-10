@@ -41,22 +41,21 @@ app.post('/testApp', (req, res) => {
 			password: 'Oc1920!'
 		}
 	}).then(response =>{
+        console.log(response.data)
 
-        console.log(response)
+        let response_value = (typeof response.data.results.bindings[0].purpose === 'undefined') ? response.data.results.bindings[0].description.value 
+        : response.data.results.bindings[0].purpose.value;	// checks out if the return type is 'purpose' or 'description' and set the value for fulfilmment text..
 
-	let response_value = (typeof response.data.results.bindings[0].purpose === 'undefined') ? response.data.results.bindings[0].description.value 
-	: response.data.results.bindings[0].purpose.value;	// checks out if the return type is 'purpose' or 'description' and set the value for fulfilmment text..
+        console.log(response_value);
 
-	console.log(response_value);
+        //res.send(response.data);	returns the full JSON body, instead we can re-define a fulfillmentText that'll be shown on Google Assistant..
 
-	//res.send(response.data);	returns the full JSON body, instead we can re-define a fulfillmentText that'll be shown on Google Assistant..
+        var fulfillText = 'Response from the webhook: ' + response_value;
 
-	var fulfillText = 'Response from the webhook: ' + response_value;
-
-	return res.json({
-		fulfillmentText: fulfillText,
-		source: 'testApp'
-	});
+        return res.json({
+            fulfillmentText: fulfillText,
+            source: 'testApp'
+        });
 	}).catch(error => {
 		console.log(error);
 		res.send(error);
