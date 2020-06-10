@@ -56,7 +56,7 @@ app.post('/testApp', (req, res) => {
 			password: 'Oc1920!'
 		}
 	}).then(response =>{
-        console.log("Response data: \n" + response.data + "\n\n\n\n")
+        console.log("Response data: \n" + response + "\n\n\n\n")
 
         var fulfillText = 'Response from the webhook: '
 
