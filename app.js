@@ -29,11 +29,11 @@ app.post('/testApp', (req, res) => {
 
 	// TODO: we need a distinction between what is and other question types
 
-	console.log(req.body.queryResult.intent)
+	console.log(req.body.queryResult.intent + "\n\n\n\n")
 
 	var requested_intent = req.body.queryResult.parameters.placeholder_generated_entities;
 
-	console.log(requested_intent)
+	console.log(requested_intent + "\n\n\n\n")
 
 	var encoded_query = querystring.stringify({query: `
 	PREFIX schema: <http://schema.org/>
@@ -55,7 +55,7 @@ app.post('/testApp', (req, res) => {
 			password: 'Oc1920!'
 		}
 	}).then(response =>{
-        console.log(response.data)
+        console.log("Response data: \n" + response.data + "\n\n\n\n")
 
         var fulfillText = 'Response from the webhook: '
 
