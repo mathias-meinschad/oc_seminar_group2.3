@@ -29,6 +29,8 @@ app.post('/testApp', (req, res) => {
 
 	// TODO: we need a distinction between what is and other question types
 
+	console.log(req.body.queryResult.intent)
+
 	var requested_intent = req.body.queryResult.parameters.placeholder_generated_entities;
 
 	console.log(requested_intent)
