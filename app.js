@@ -22,6 +22,7 @@ app.listen(port, () => {
 })
 
 app.post('/testApp', (req, res) => {
+	console.log(req.body.queryResult)
     var requested_intent = req.body.queryResult.parameters.name;
 
 	var encoded_query = querystring.stringify({query: `PREFIX schema: <http://schema.org/>
@@ -34,6 +35,7 @@ app.post('/testApp', (req, res) => {
 	});	// pre-defined query sample.. needs to be improved to handle complicated queries -> only returns purpose or description for the passed 'name'..
 
     let url = host_name + encoded_query;	// encodes the given query to create a url based on passed parameters, intents in our case..
+	console.log(url)
 
 	axios.get(url, {
 		auth: {
