@@ -13,6 +13,10 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 
+function remove_whitespaces(input) {
+	return input.split(" ").join("")
+}
+
 app.get('/', (req, res) => {
     res.status(200).send("Server is running")
 })
@@ -22,20 +26,26 @@ app.listen(port, () => {
 })
 
 app.post('/testApp', (req, res) => {
-	console.log(req.body.queryResult)
-    var requested_intent = req.body.queryResult.parameters.name;
 
-	var encoded_query = querystring.stringify({query: `PREFIX schema: <http://schema.org/>
+	// TODO: we need a distinction between what is and other question types
+
+	var requested_intent = req.body.queryResult.parameters.placeholder_generated_entities;
+
+	console.log(requested_intent)
+
+	var encoded_query = querystring.stringify({query: `
+	PREFIX schema: <http://schema.org/>
+	PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+	PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
 	select * where { 
-    ?Concept schema:name ?name.
-    OPTIONAL {?Concept schema:purpose ?purpose.}
-	OPTIONAl {?Concept schema:description ?description.}
-	filter contains(LCASE(?name), LCASE("${requested_intent}"))
+		?Concept schema:name ?name.
+		OPTIONAl {?Concept rdfs:comment ?comment.}
+		filter contains(LCASE(?name), LCASE("${remove_whitespaces(requested_intent)}"))
 	}`
 	});	// pre-defined query sample.. needs to be improved to handle complicated queries -> only returns purpose or description for the passed 'name'..
 
     let url = host_name + encoded_query;	// encodes the given query to create a url based on passed parameters, intents in our case..
-	console.log(url)
 
 	axios.get(url, {
 		auth: {
@@ -47,8 +57,6 @@ app.post('/testApp', (req, res) => {
 
         let response_value = (typeof response.data.results.bindings[0].purpose === 'undefined') ? response.data.results.bindings[0].description.value 
         : response.data.results.bindings[0].purpose.value;	// checks out if the return type is 'purpose' or 'description' and set the value for fulfilmment text..
-
-        console.log(response_value);
 
         //res.send(response.data);	returns the full JSON body, instead we can re-define a fulfillmentText that'll be shown on Google Assistant..
 
