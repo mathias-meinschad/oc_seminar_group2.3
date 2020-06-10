@@ -26,14 +26,13 @@ app.listen(port, () => {
 })
 
 app.post('/testApp', (req, res) => {
-
 	// TODO: we need a distinction between what is and other question types
-
-	console.log(req.body.queryResult.intent + "\n\n\n\n")
 
 	var requested_intent = req.body.queryResult.parameters.placeholder_generated_entities;
 
-	console.log(requested_intent + "\n\n\n\n")
+	var entity_class = remove_whitespaces(requested_intent)
+
+	console.log(entity_class + "\n\n\n\n")
 
 	var encoded_query = querystring.stringify({query: `
 	PREFIX schema: <http://schema.org/>
@@ -43,11 +42,13 @@ app.post('/testApp', (req, res) => {
 	select * where { 
 		?Concept schema:name ?name.
 		OPTIONAl {?Concept rdfs:comment ?comment.}
-		filter contains(LCASE(?name), LCASE("${remove_whitespaces(requested_intent)}"))
+		filter contains(LCASE(?name), LCASE("${entity_class}"))
 	}`
 	});	// pre-defined query sample.. needs to be improved to handle complicated queries -> only returns purpose or description for the passed 'name'..
 
-    let url = host_name + encoded_query;	// encodes the given query to create a url based on passed parameters, intents in our case..
+	let url = host_name + encoded_query;	// encodes the given query to create a url based on passed parameters, intents in our case..
+	
+	console.log("url: " + url)
 
 	axios.get(url, {
 		auth: {
