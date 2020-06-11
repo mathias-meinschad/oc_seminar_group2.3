@@ -20,8 +20,6 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 
-var fulfillmentText
-
 app.get('/', (req, res) => {
     res.status(200).send("Server is running")
 })
@@ -35,6 +33,8 @@ app.post('/testApp', (req, res) => {
 		console.log("Intent is: " + req.body.queryResult.intent.displayName)
 
 		if (req.body.queryResult.intent.displayName == "What is Type Question") {
+			console.log("inside if\n")
+
 			var requested_intent = req.body.queryResult.parameters.placeholder_generated_entities;
 
 			var encoded_query = querystring.stringify({query: `
@@ -51,27 +51,28 @@ app.post('/testApp', (req, res) => {
 			
 			let url = host_name + encoded_query
 			
-			fulfillmentText = axios.get(url,authenticationParams).then(response =>{			
+			axios.get(url,authenticationParams).then(response =>{			
 				let response_value = (typeof response.data.results.bindings[0].purpose === 'undefined') ? response.data.results.bindings[0].description.value 
 				: response.data.results.bindings[0].purpose.value;	// checks out if the return type is 'purpose' or 'description' and set the value for fulfilmment text..
 				
 				console.log("response value is: " + response_value)
 
-				return response_value
+				return res.json({
+					fulfillmentText: response_value,
+					source: 'testApp'
+				});
 			}).catch(error => {
 				console.log(error);
 				res.send(error);
 			});
 		} else {
-			fulfillmentText = 'Intent could not be parsed.'
+			return res.json({
+				fulfillText: 'Intent could not be parsed.',
+				source: 'testApp'
+			})
 		}
 
-		console.log("Before send: " + fulfillmentText)
-
-		return res.json({
-			fulfillText: fulfillmentText,
-			source: 'testApp'
-		})
+		
 	} catch (e) {
 		console.log(e)
 		return res.json({
