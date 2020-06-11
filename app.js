@@ -35,8 +35,6 @@ app.post('/testApp', (req, res) => {
 		console.log("Intent is: " + req.body.queryResult.intent.displayName)
 
 		if (req.body.queryResult.intent.displayName == "What is Type Question") {
-			console.log("inside if\n")
-
 			var requested_intent = req.body.queryResult.parameters.placeholder_generated_entities;
 
 			var encoded_query = querystring.stringify({query: `
@@ -67,6 +65,8 @@ app.post('/testApp', (req, res) => {
 		} else {
 			fulfillmentText = 'Intent could not be parsed.'
 		}
+
+		console.log("Before send")
 
 		return res.json({
 			fulfillText: fulfillmentText,
