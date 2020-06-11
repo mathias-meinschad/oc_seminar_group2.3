@@ -7,6 +7,13 @@ const axios = require('axios');
 
 const host_name = "https://graphdb.sti2.at/repositories/OCSS2020?";
 
+const authenticationParams = {
+	auth: {
+		username: 'oc1920',
+		password: 'Oc1920!'
+	}
+}
+
 const querystring = require('querystring');
 
 app.use(express.json())
@@ -24,46 +31,40 @@ app.listen(port, () => {
 app.post('/testApp', (req, res) => {
 	// TODO: we need a distinction between what is and other question types
 
-	var requested_intent = req.body.queryResult.parameters.placeholder_generated_entities;
+	if (req.body.queryResult.intent.displayName === "\"What is \" Type") {
 
-	var encoded_query = querystring.stringify({query: `
-			PREFIX schema: <http://schema.org/>
+		var requested_intent = req.body.queryResult.parameters.placeholder_generated_entities;
 
-			select * where { 
-				?Concept schema:name ?name.
-				OPTIONAL {?Concept schema:purpose ?purpose.}
-				OPTIONAl {?Concept schema:description ?description.}
-				filter contains(LCASE(?name), LCASE("${requested_intent}"))
-			}
-		`
-		});	// pre-defined query sample.. needs to be improved to handle complicated queries -> only returns purpose or description for the passed 'name'..
-	
-		let url = host_name + encoded_query;	// encodes the given query to create a url based on passed parameters, intents in our case..
-		
-		axios.get(url, {
-			auth: {
-				username: 'oc1920',
-				password: 'Oc1920!'
-			}
-		}).then(response =>{
+		var encoded_query = querystring.stringify({query: `
+				PREFIX schema: <http://schema.org/>
 
-		console.log("Response is:\n" + response + "\n End of Response")
+				select * where { 
+					?Concept schema:name ?name.
+					OPTIONAL {?Concept schema:purpose ?purpose.}
+					OPTIONAl {?Concept schema:description ?description.}
+					filter contains(LCASE(?name), LCASE("${requested_intent}"))
+				}
+			`
+			});	// pre-defined query sample.. needs to be improved to handle complicated queries -> only returns purpose or description for the passed 'name'..
 		
-		let response_value = (typeof response.data.results.bindings[0].purpose === 'undefined') ? response.data.results.bindings[0].description.value 
-		: response.data.results.bindings[0].purpose.value;	// checks out if the return type is 'purpose' or 'description' and set the value for fulfilmment text..
-		
-		console.log(response_value);
-		
-		//res.send(response.data);	returns the full JSON body, instead we can re-define a fulfillmentText that'll be shown on Google Assistant..
-		
-		var fulfillText = 'Response from the webhook: ' + response_value;
-		
+			let url = host_name + encoded_query
+			
+			axios.get(url,authenticationParams).then(response =>{				
+				let response_value = (typeof response.data.results.bindings[0].purpose === 'undefined') ? response.data.results.bindings[0].description.value 
+				: response.data.results.bindings[0].purpose.value;	// checks out if the return type is 'purpose' or 'description' and set the value for fulfilmment text..
+				
+				return res.json({
+					fulfillmentText: response_value,
+					source: 'testApp'
+				});
+			}).catch(error => {
+				console.log(error);
+				res.send(error);
+			});	
+		}
+
 		return res.json({
-			fulfillmentText: fulfillText,
-			source: 'testApp'
-		});
-		}).catch(error => {
-			console.log(error);
-			res.send(error);
-		});	
+			fulfillText: "Intent could not be parsed.",
+			source: "Intelligent Textbook Webhook"
+		})
 	})
