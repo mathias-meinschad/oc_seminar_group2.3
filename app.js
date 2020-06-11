@@ -20,6 +20,8 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 
+var fulfillmentText
+
 app.get('/', (req, res) => {
     res.status(200).send("Server is running")
 })
@@ -57,19 +59,17 @@ app.post('/testApp', (req, res) => {
 				
 				console.log("response value is: " + response_value)
 
-				return res.json({
-					fulfillmentText: response_value,
-					source: 'testApp'
-				});
+				fulfillmentText = response_value
 			}).catch(error => {
 				console.log(error);
 				res.send(error);
 			});
-			console.log("This should not be printed")
+		} else {
+			fulfillmentText = 'Intent could not be parsed.'
 		}
 
 		return res.json({
-			fulfillText: 'Intent could not be parsed.',
+			fulfillText: fulfillmentText,
 			source: 'testApp'
 		})
 	} catch (e) {
