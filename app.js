@@ -51,13 +51,13 @@ app.post('/testApp', (req, res) => {
 			
 			let url = host_name + encoded_query
 			
-			axios.get(url,authenticationParams).then(response =>{			
+			fulfillmentText = await axios.get(url,authenticationParams).then(response =>{			
 				let response_value = (typeof response.data.results.bindings[0].purpose === 'undefined') ? response.data.results.bindings[0].description.value 
 				: response.data.results.bindings[0].purpose.value;	// checks out if the return type is 'purpose' or 'description' and set the value for fulfilmment text..
 				
 				console.log("response value is: " + response_value)
 
-				fulfillmentText = response_value
+				return response_value
 			}).catch(error => {
 				console.log(error);
 				res.send(error);
