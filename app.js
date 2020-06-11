@@ -30,10 +30,10 @@ app.listen(port, () => {
 
 app.post('/testApp', (req, res) => {
 	try {
-		console.log("Intent is: " + req.body.queryResult.intent.displayName)
+		console.log("Intent is: " + req.body.queryResult.intent.displayName + "\n")
 
 		if (req.body.queryResult.intent.displayName == "\"What is \" Type") {
-			console.log("inside if")
+			console.log("inside if\n")
 
 			var requested_intent = req.body.queryResult.parameters.placeholder_generated_entities;
 
@@ -66,6 +66,8 @@ app.post('/testApp', (req, res) => {
 				res.send(error);
 			});	
 		}
+
+		console.log("If not successful\n")
 
 		return res.json({
 			fulfillText: "Intent could not be parsed.",
