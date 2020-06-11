@@ -66,7 +66,7 @@ app.post('/testApp', (req, res) => {
 				break
 			default: {
 					return res.json({
-						fulfillText: 'Intent could not be parsed by Webhook',
+						fulfillmentText: 'Intent could not be parsed by Webhook',
 						source: 'testApp'
 					})
 				}
@@ -74,7 +74,7 @@ app.post('/testApp', (req, res) => {
 	} catch (e) {
 		console.log(e)
 		return res.json({
-			fulfillText: 'Error in webhook: ' + e,
+			fulfillmentText: 'Error in webhook: ' + e,
 			source: 'testApp'
 		})
 	}
