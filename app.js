@@ -32,7 +32,7 @@ app.post('/testApp', (req, res) => {
 	try {
 		console.log("Intent is: " + req.body.queryResult.intent.displayName + "\n")
 
-		if (req.body.queryResult.intent.displayName == "\"What is \" Type") {
+		if (req.body.queryResult.intent.displayName == "What is Type Question") {
 			console.log("inside if\n")
 
 			var requested_intent = req.body.queryResult.parameters.placeholder_generated_entities;
@@ -67,16 +67,16 @@ app.post('/testApp', (req, res) => {
 			});	
 		}
 
-		console.log("If not successful\n")
 
 		return res.json({
-			fulfillText: "Intent could not be parsed.",
-			source: "testApp"
+			fulfillText: 'Intent could not be parsed.',
+			source: 'testApp'
 		})
 	} catch (e) {
+		console.log(e)
 		return res.json({
-			fulfillText: "Error in webhook: " + e,
-			source: "testApp"
+			fulfillText: 'Error in webhook: ' + e,
+			source: 'testApp'
 		})
 	}
 })
