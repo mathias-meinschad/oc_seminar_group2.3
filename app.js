@@ -19,6 +19,7 @@ const querystring = require('querystring');
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
+var fulfillmentText = ""
 
 app.get('/', (req, res) => {
     res.status(200).send("Server is running")
@@ -51,19 +52,16 @@ app.post('/testApp', (req, res) => {
 			
 			let url = host_name + encoded_query
 			
-			axios.get(url, {
-				auth: {
-					username: 'oc1920',
-					password: 'Oc1920!'
-				}
-			}).then(response =>{				
+			axios.get(url,authenticationParams).then(response =>{				
 				let response_value = (typeof response.data.results.bindings[0].purpose === 'undefined') ? response.data.results.bindings[0].description.value 
 				: response.data.results.bindings[0].purpose.value;	// checks out if the return type is 'purpose' or 'description' and set the value for fulfilmment text..
 				
 				console.log("response value is: " + response_value)
 
+				fulfillmentText = response_value
+
 				return res.json({
-					fulfillmentText: response_value,
+					fulfillmentText: fulfillmentText,
 					source: 'testApp'
 				});
 			}).catch(error => {
@@ -72,14 +70,17 @@ app.post('/testApp', (req, res) => {
 			});	
 		}
 
+		fulfillmentText = 'Intent could not be parsed.'
+
 		return res.json({
 			fulfillText: 'Intent could not be parsed.',
 			source: 'testApp'
 		})
 	} catch (e) {
+		fulfillmentText = 'Error in webhook: ' + e
 		console.log(e)
 		return res.json({
-			fulfillText: 'Error in webhook: ' + e,
+			fulfillText: fulfillmentText,
 			source: 'testApp'
 		})
 	}
