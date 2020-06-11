@@ -51,7 +51,12 @@ app.post('/testApp', (req, res) => {
 			
 			let url = host_name + encoded_query
 			
-			axios.get(url,authenticationParams).then(response =>{				
+			axios.get(url, {
+				auth: {
+					username: 'oc1920',
+					password: 'Oc1920!'
+				}
+			}).then(response =>{				
 				let response_value = (typeof response.data.results.bindings[0].purpose === 'undefined') ? response.data.results.bindings[0].description.value 
 				: response.data.results.bindings[0].purpose.value;	// checks out if the return type is 'purpose' or 'description' and set the value for fulfilmment text..
 				
@@ -61,7 +66,6 @@ app.post('/testApp', (req, res) => {
 					fulfillmentText: response_value,
 					source: 'testApp'
 				});
-				console.log("This should never show!")
 			}).catch(error => {
 				console.log(error);
 				res.send(error);
