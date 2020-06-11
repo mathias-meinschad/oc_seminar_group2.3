@@ -13,10 +13,6 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 
-function remove_whitespaces(input) {
-	return input.split(" ").join("")
-}
-
 app.get('/', (req, res) => {
     res.status(200).send("Server is running")
 })
@@ -30,42 +26,44 @@ app.post('/testApp', (req, res) => {
 
 	var requested_intent = req.body.queryResult.parameters.placeholder_generated_entities;
 
-	var entity_class = remove_whitespaces(requested_intent)
-
-	console.log(entity_class + "\n\n\n\n")
-
 	var encoded_query = querystring.stringify({query: `
-	PREFIX schema: <http://schema.org/>
-	PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-	PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+			PREFIX schema: <http://schema.org/>
 
-	select ?comment where { 
-		?Concept schema:name ?name.
-		OPTIONAl {?Concept rdfs:comment ?comment.}
-		filter contains(LCASE(?name), LCASE("${entity_class}"))
-	}`
-	});	// pre-defined query sample.. needs to be improved to handle complicated queries -> only returns purpose or description for the passed 'name'..
-
-	let url = host_name + encoded_query;	// encodes the given query to create a url based on passed parameters, intents in our case..
+			select * where { 
+				?Concept schema:name ?name.
+				OPTIONAL {?Concept schema:purpose ?purpose.}
+				OPTIONAl {?Concept schema:description ?description.}
+				filter contains(LCASE(?name), LCASE("${requested_intent}"))
+			}
+		`
+		});	// pre-defined query sample.. needs to be improved to handle complicated queries -> only returns purpose or description for the passed 'name'..
 	
-	console.log("url: " + url)
+		let url = host_name + encoded_query;	// encodes the given query to create a url based on passed parameters, intents in our case..
+		
+		axios.get(url, {
+			auth: {
+				username: 'oc1920',
+				password: 'Oc1920!'
+			}
+		}).then(response =>{
 
-	axios.get(url, {
-		auth: {
-			username: 'oc1920',
-			password: 'Oc1920!'
-		}
-	}).then(response =>{
-        console.log("Response data: \n" + response + "\n\n\n\n")
-
-        var fulfillText = 'Response from the webhook: '
-
-        return res.json({
-            fulfillmentText: fulfillText,
-            source: 'testApp'
-        });
-	}).catch(error => {
-		console.log(error);
-		res.send(error);
-	});	
-})
+		console.log("Response is:\n" + response + "\n End of Response")
+		
+		let response_value = (typeof response.data.results.bindings[0].purpose === 'undefined') ? response.data.results.bindings[0].description.value 
+		: response.data.results.bindings[0].purpose.value;	// checks out if the return type is 'purpose' or 'description' and set the value for fulfilmment text..
+		
+		console.log(response_value);
+		
+		//res.send(response.data);	returns the full JSON body, instead we can re-define a fulfillmentText that'll be shown on Google Assistant..
+		
+		var fulfillText = 'Response from the webhook: ' + response_value;
+		
+		return res.json({
+			fulfillmentText: fulfillText,
+			source: 'testApp'
+		});
+		}).catch(error => {
+			console.log(error);
+			res.send(error);
+		});	
+	})
