@@ -29,7 +29,7 @@ app.listen(port, () => {
 })
 
 app.post('/testApp', (req, res) => {
-	// TODO: we need a distinction between what is and other question types
+	console.log("Intent is: req.body.queryResult.intent.displayName")
 
 	if (req.body.queryResult.intent.displayName === "\"What is \" Type") {
 
