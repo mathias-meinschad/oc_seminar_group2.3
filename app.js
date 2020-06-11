@@ -30,7 +30,7 @@ app.listen(port, () => {
 
 app.post('/testApp', (req, res) => {
 	try {
-		console.log("Intent is: " + req.body.queryResult.intent.displayName + "\n")
+		console.log("Intent is: " + req.body.queryResult.intent.displayName)
 
 		if (req.body.queryResult.intent.displayName == "What is Type Question") {
 			console.log("inside if\n")
@@ -61,12 +61,12 @@ app.post('/testApp', (req, res) => {
 					fulfillmentText: response_value,
 					source: 'testApp'
 				});
+				console.log("This should never show!")
 			}).catch(error => {
 				console.log(error);
 				res.send(error);
 			});	
 		}
-
 
 		return res.json({
 			fulfillText: 'Intent could not be parsed.',
