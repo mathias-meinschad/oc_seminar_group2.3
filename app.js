@@ -32,7 +32,7 @@ app.post('/testApp', (req, res) => {
 	try {
 		console.log("Intent is: " + req.body.queryResult.intent.displayName)
 
-		if (req.body.queryResult.intent.displayName === "\"What is \" Type") {
+		if (req.body.queryResult.intent.displayName == "\"What is \" Type") {
 			console.log("inside if")
 
 			var requested_intent = req.body.queryResult.parameters.placeholder_generated_entities;
