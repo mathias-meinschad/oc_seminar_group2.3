@@ -34,7 +34,7 @@ app.post('/testApp', (req, res) => {
 
 		switch (req.body.queryResult.intent.displayName) {
 			case "What is Type Question": 
-				return callGraphDb()
+				return callGraphDb(req, res)
 			default: {
 					return res.json({
 						fulfillmentText: 'Webhook Error: Intent could not be parsed.',
@@ -51,7 +51,7 @@ app.post('/testApp', (req, res) => {
 	}
 })
 
-function callGraphDb() {
+function callGraphDb(req, res) {
 	var requested_intent = req.body.queryResult.parameters.placeholder_generated_entities;
 
 	var encoded_query = querystring.stringify({query: `
