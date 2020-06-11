@@ -69,12 +69,12 @@ app.post('/testApp', (req, res) => {
 
 		return res.json({
 			fulfillText: "Intent could not be parsed.",
-			source: "Intelligent Textbook Webhook"
+			source: "testApp"
 		})
 	} catch (e) {
 		return res.json({
 			fulfillText: "Error in webhook: " + e,
-			source: "Intelligent Textbook Webhook"
+			source: "testApp"
 		})
 	}
 })
