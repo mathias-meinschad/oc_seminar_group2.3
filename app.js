@@ -51,7 +51,7 @@ app.post('/testApp', (req, res) => {
 			
 			let url = host_name + encoded_query
 			
-			fulfillmentText = await axios.get(url,authenticationParams).then(response =>{			
+			fulfillmentText = axios.get(url,authenticationParams).then(response =>{			
 				let response_value = (typeof response.data.results.bindings[0].purpose === 'undefined') ? response.data.results.bindings[0].description.value 
 				: response.data.results.bindings[0].purpose.value;	// checks out if the return type is 'purpose' or 'description' and set the value for fulfilmment text..
 				
@@ -66,7 +66,7 @@ app.post('/testApp', (req, res) => {
 			fulfillmentText = 'Intent could not be parsed.'
 		}
 
-		console.log("Before send")
+		console.log("Before send: " + fulfillmentText)
 
 		return res.json({
 			fulfillText: fulfillmentText,
