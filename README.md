@@ -19,3 +19,12 @@ Work done so far:
 Work to do:
   - 2 responses return for the entity type of 'Named Entity Recognition' so it should be handled.
   - Query design for rest of the entities.
+
+================================================================================================================================
+
+Work done:
+  - Defined the queries as functions. So we can call specific querie according to the intents.
+  - Grouped the questions into text file. Mark the questions with '+' if we are able to get a fulfillment text from the WebHook.
+
+To Do's:
+  - Queries for the reamining question set.
