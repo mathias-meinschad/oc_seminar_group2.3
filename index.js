@@ -1,63 +1,101 @@
-const express = require('express');
+var express = require('express');
+var app = express();
 
-const app = express();
-const port = process.env.PORT || 8080;
+var port = process.env.PORT || 8080;
 
 const axios = require('axios');
 
 const host_name = "https://graphdb.sti2.at/repositories/OCSS2020?";
+
+const authenticationParams = {
+	auth: {
+		username: 'oc1920',
+		password: 'Oc1920!'
+	}
+}
 
 const querystring = require('querystring');
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-app.get('/', (req, res) => {  
+
+app.get('/', (req, res) => {
     res.status(200).send("Server is running")
 })
 
 app.listen(port, () => {
-	console.log(`🌏 Server is running at https://test-app-ocs2020.herokuapp.com:${port}`)
+	console.log(`🌏 Server is running at https://intelligent-textbook.herokuapp.com:${port}`)
 })
 
 app.post('/testApp', (req, res) => {
+	try {
+		console.log("Intent is: " + req.body.queryResult.intent.displayName);
+		//console.log(req.body.queryResult);
+		if(typeof req.body.queryResult.intent.displayName !== 'undefined')	return callGraphDb(req, res)
 	
-	var requested_intent = req.body.queryResult.parameters.name;
-	
-	var encoded_query = querystring.stringify({query: `PREFIX schema: <http://schema.org/>
+		else	return res.json({
+						fulfillmentText: 'Webhook Error: Intent could not be parsed.',
+						source: 'testApp'
+				})
+				
+	} catch (e) {
+		console.log(e)
+		return res.json({
+			fulfillmentText: 'Webhook Error: ' + e,
+			source: 'testApp'
+		})
+	}
+})
 
-	select * where { 
-    ?Concept schema:name ?name.
-    OPTIONAL {?Concept schema:purpose ?purpose.}
-	OPTIONAl {?Concept schema:description ?description.}
-	filter contains(LCASE(?name), LCASE("${requested_intent}"))
-	}`
-	});	// pre-defined query sample.. needs to be improved to handle complicated queries -> only returns purpose or description for the passed 'name'..
-
-    let url = host_name + encoded_query;	// encodes the given query to create a url based on passed parameters, intents in our case..
+function callGraphDb(req, res) {
+	//var requested_intent = req.body.queryResult.parameters.placeholder_generated_entities;
 	
-	axios.get(url, {
-		auth: {
-			username: 'oc1920',
-			password: 'Oc1920!'
+	var requested_intent = Object.values(req.body.queryResult.parameters)[0];
+	
+	var encoded_query;
+	
+	switch (req.body.queryResult.intent.displayName) {	// We can call the query functions according to question types...
+		case "What is Type Question":
+			encoded_query = query1(requested_intent);
+			break;
+		case "nlp tasks explanation":
+			encoded_query = query1(requested_intent);
+			break;
+		default: {	// I don't know if it is necessary since Dialogflow has a Default Fallback Intent...
+			return res.json({
+				fulfillmentText: 'Sorry! I can\'t help you about this question',
+				source: 'testApp'
+			})
 		}
-	}).then(response =>{
+	}
 	
-	let response_value = (typeof response.data.results.bindings[0].purpose === 'undefined') ? response.data.results.bindings[0].description.value 
-	: response.data.results.bindings[0].purpose.value;	// checks out if the return type is 'purpose' or 'description' and set the value for fulfilmment text..
+	let url = host_name + encoded_query;
 	
-	console.log(response_value);
-	
-	//res.send(response.data);	returns the full JSON body, instead we can re-define a fulfillmentText that'll be shown on Google Assistant..
-	
-	var fulfillText = 'Response from the webhook: ' + response_value;
-	
-	return res.json({
-		fulfillmentText: fulfillText,
-		source: 'testApp'
-	});
+	axios.get(url,authenticationParams).then(response =>{			
+		let response_value = (typeof response.data.results.bindings[0].purpose === 'undefined') ? response.data.results.bindings[0].description.value 
+		: response.data.results.bindings[0].purpose.value;	// checks out if the return type is 'purpose' or 'description' and set the value for fulfilmment text..
+
+		return res.json({
+			fulfillmentText: response_value,
+			source: 'testApp'
+		});
 	}).catch(error => {
 		console.log(error);
 		res.send(error);
-	});	
-})
+	});
+}
+
+function query1(req_intent){	// First query to handle what is .. and nlp tasks .. questions
+	return querystring.stringify({query: `
+			PREFIX schema: <http://schema.org/>
+			PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
+			select * where { 
+				?Concept schema:name ?name.
+				OPTIONAL {?Concept kgbs:purpose ?purpose.}
+				OPTIONAL {?Concept schema:description ?description.}
+				filter contains(LCASE(?name), LCASE("${req_intent}"))
+			}
+		`
+		});
+}
