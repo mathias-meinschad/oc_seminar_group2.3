@@ -101,6 +101,7 @@ function response_validation(req, response_value_array) {
 			return response_value_array[0]
 		case "Difference Type Question":
 			var distinct_values = new Set(response_value_array)
+			console.log(distinct_values[0])
 			if (distinct_values.length == 1) {
 				return distinct_values[0];
 			} else {
