@@ -84,7 +84,7 @@ function callGraphDb(req, res) {
 	});
 }
 
-function query_for_what_is_questions(req_intent){
+function query_for_what_is_questions(parameter){
 	return querystring.stringify({query: `
 			PREFIX schema: <http://schema.org/>
 			PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
@@ -92,13 +92,13 @@ function query_for_what_is_questions(req_intent){
 				?Concept schema:name ?name.
 				OPTIONAL {?Concept kgbs:purpose ?purpose.}
 				OPTIONAL {?Concept schema:description ?description.}
-				filter contains(LCASE(?name), LCASE("${req_intent}"))
+				filter contains(LCASE(?name), LCASE("${parameter}"))
 			}
 		`
 	});
 }
 
-function query_for_difference_questions(req_intent){
+function query_for_difference_questions(first_parameter, second_parameter){
 	return querystring.stringify({query: `
 			PREFIX schema: <http://schema.org/>
 			PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
@@ -106,7 +106,7 @@ function query_for_difference_questions(req_intent){
 				?Concept schema:name ?name.
 				OPTIONAL {?Concept kgbs:purpose ?purpose.}
 				OPTIONAL {?Concept schema:description ?description.}
-				filter contains(LCASE(?name), LCASE("${req_intent}"))
+				filter contains(LCASE(?name), LCASE("${first_parameter}"))
 			}
 		`
 	});
