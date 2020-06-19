@@ -145,18 +145,18 @@ function query_for_list_questions(parameter){
 		PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
 		PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 							
-		select ?value where { 
+		select ?description where { 
 			{
 				?Concept schema:name ?name
 				OPTIONAL {?Concept skos:narrower ?specialization.}
-				OPTIONAL {?specialization schema:name ?value.}
+				OPTIONAL {?specialization schema:name ?description.}
 				filter (LCASE(?name) = LCASE("${parameter}")) .
 			}    
 			union 
 			{
 				?Concept schema:alternateName ?name
 				OPTIONAL {?Concept skos:narrower ?specialization.}
-				OPTIONAL {?specialization schema:name ?value.}
+				OPTIONAL {?specialization schema:name ?description.}
 				filter (LCASE(?name) = LCASE("${parameter}")) .
 			}
 		}
