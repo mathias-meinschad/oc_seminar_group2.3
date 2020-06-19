@@ -88,8 +88,9 @@ function callGraphDb(req, res) {
 
 function collectResponseDataFromGraphDb(response) {
 	var ret_array = []
-	for (data in response.data.results.bindings) {
-		ret_array.push(data.description.value);
+	for (i = 0; i < response.data.results.bindings.length; i++) {
+		ret_array[i] = (typeof response.data.results.bindings[i].purpose === 'undefined') ? response.data.results.bindings[i].description.value 
+																						  : response.data.results.bindings[i].purpose.value;
 	}
 	return ret_array;
 }
