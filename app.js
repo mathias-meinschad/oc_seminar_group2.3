@@ -68,7 +68,8 @@ function callGraphDb(req, res) {
 	let url = host_name + encoded_query
 	
 	axios.get(url,authenticationParams).then(response =>{			
-		var response_value_array = collectResponseDataFromGraphDb(response)
+		var response_value_array = collectResponseDataFromGraphDb(response) (typeof response.data.results.bindings[0].purpose === 'undefined') ? response.data.results.bindings[0].description.value 
+		: response.data.results.bindings[0].purpose.value;	// checks out if the return type is 'purpose' or 'description' and set the value for fulfilmment text..
 
 		let response_value = response_validation(req, response_value_array)
 
@@ -86,23 +87,19 @@ function callGraphDb(req, res) {
 }
 
 function collectResponseDataFromGraphDb(response) {
-	var ret_array = [];
-	for (i = 0; i < response.data.results.bindings.length; i++) {
-		ret_array[i] = response.data.results.bindings[i].description.value;
+	var ret_array = []
+	for (data in response.data.results.bindings) {
+		ret_array.push((typeof data.purpose === 'undefined') ? data.description.value : data.purpose.value);
 	}
 	return ret_array;
 }
 
 function response_validation(req, response_value_array) {
-	console.log(response_value_array[0]);
-	console.log(response_value_array[1]);
 	switch (req.body.queryResult.intent.displayName) {
 		case "What is Type Question":
 			return response_value_array[0]
 		case "Difference Type Question":
-			var distinct_values = new Set(response_value_array)
-			console.log(distinct_values[0])
-			if (distinct_values.length == 1) {
+			if (response_value_array[0] == response_value_array[1]) {
 				return distinct_values[0];
 			} else {
 				return "The requested concepts cannot be compared"
