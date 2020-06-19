@@ -57,9 +57,6 @@ function callGraphDb(req, res) {
 			var first_parameter = Object.values(Object.values(req.body.queryResult.parameters)[0])[0];
 			var second_parameter = Object.values(Object.values(req.body.queryResult.parameters)[0])[1];
 
-			
-			console.log("Parameters are: " + first_parameter + " " + second_parameter)
-
 			encoded_query = query_for_difference_questions(first_parameter, second_parameter);
 			break;
 		default: {
@@ -80,7 +77,10 @@ function callGraphDb(req, res) {
 		});
 	}).catch(error => {
 		console.log(error);
-		res.send(error);
+		return res.json({
+			fulfillmentText: 'Webhook Error: Failed getting data from GraphDb.',
+			source: 'testApp'
+		})
 	});
 }
 
