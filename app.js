@@ -94,6 +94,8 @@ function collectResponseDataFromGraphDb(response) {
 }
 
 function response_validation(req, response_value_array) {
+	console.log(response_value_array[0]);
+	console.log(response_value_array[1]);
 	switch (req.body.queryResult.intent.displayName) {
 		case "What is Type Question":
 			return response_value_array[0]
