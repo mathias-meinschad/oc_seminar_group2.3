@@ -32,16 +32,7 @@ app.post('/testApp', (req, res) => {
 	try {
 		console.log("Intent is: " + req.body.queryResult.intent.displayName)
 
-		switch (req.body.queryResult.intent.displayName) {
-			case "What is Type Question": 
-				return callGraphDb(req, res)
-			default: {
-					return res.json({
-						fulfillmentText: 'Webhook Error: Intent could not be parsed.',
-						source: 'testApp'
-					})
-				}
-		}
+		callGraphDb(req, res)
 	} catch (e) {
 		console.log(e)
 		return res.json({
@@ -52,25 +43,34 @@ app.post('/testApp', (req, res) => {
 })
 
 function callGraphDb(req, res) {
-	var requested_intent = req.body.queryResult.parameters.placeholder_generated_entities;
+	var encoded_query;
 
-	var encoded_query = querystring.stringify({query: `
-			PREFIX schema: <http://schema.org/>
+	switch (req.body.queryResult.intent.displayName) {
+		case "What is Type Question": 
+			var parameter = Object.values(req.body.queryResult.parameters)[0];
 
-			select * where { 
-				?Concept schema:name ?name.
-				OPTIONAL {?Concept schema:purpose ?purpose.}
-				OPTIONAl {?Concept schema:description ?description.}
-				filter contains(LCASE(?name), LCASE("${requested_intent}"))
-			}
-		`
-		});	// pre-defined query sample.. needs to be improved to handle complicated queries -> only returns purpose or description for the passed 'name'..
-	
+			encoded_query = query_for_what_is_questions(parameter)
+			break;
+		case "Difference Type Question":
+			var first_parameter = Object.values(Object.values(req.body.queryResult.parameters)[0])[0];
+			var second_parameter = Object.values(Object.values(req.body.queryResult.parameters)[0])[1];
+
+			encoded_query = query_for_difference_questions(first_parameter, second_parameter);
+			break;
+		default: {
+			return res.json({
+				fulfillmentText: 'Webhook Error: Intent could not be parsed.',
+				source: 'testApp'
+			})
+		}
+	}
+
 	let url = host_name + encoded_query
 	
 	axios.get(url,authenticationParams).then(response =>{			
-		let response_value = (typeof response.data.results.bindings[0].purpose === 'undefined') ? response.data.results.bindings[0].description.value 
-		: response.data.results.bindings[0].purpose.value;	// checks out if the return type is 'purpose' or 'description' and set the value for fulfilmment text..
+		var response_value_array = collectResponseDataFromGraphDb(response)
+
+		let response_value = response_validation(req, response_value_array)
 
 		return res.json({
 			fulfillmentText: response_value,
@@ -78,6 +78,59 @@ function callGraphDb(req, res) {
 		});
 	}).catch(error => {
 		console.log(error);
-		res.send(error);
+		return res.json({
+			fulfillmentText: 'Webhook Error: Failed getting data from GraphDb.',
+			source: 'testApp'
+		})
 	});
+}
+
+function collectResponseDataFromGraphDb(response) {
+	var ret_array = []
+	for (i = 0; i < response.data.results.bindings.length; i++) {
+		ret_array[i] = (typeof response.data.results.bindings[i].purpose === 'undefined') ? response.data.results.bindings[i].description.value 
+																						  : response.data.results.bindings[i].purpose.value;
+	}
+	return ret_array;
+}
+
+function response_validation(req, response_value_array) {
+	switch (req.body.queryResult.intent.displayName) {
+		case "What is Type Question":
+			return response_value_array[0]
+		case "Difference Type Question":
+			if (response_value_array[0] == response_value_array[1]) {
+				return response_value_array[0];
+			} else {
+				return "The requested concepts cannot be compared"
+			}
+	}
+}
+
+function query_for_what_is_questions(parameter){
+	return querystring.stringify({query: `
+			PREFIX schema: <http://schema.org/>
+			PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
+			select * where { 
+				?Concept schema:name ?name.
+				OPTIONAL {?Concept kgbs:purpose ?purpose.}
+				OPTIONAL {?Concept schema:description ?description.}
+				filter contains(LCASE(?name), LCASE("${parameter}"))
+			}
+		`
+	});
+}
+
+function query_for_difference_questions(first_parameter, second_parameter){
+	return querystring.stringify({query: `
+		PREFIX schema: <http://schema.org/>
+		PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
+					
+		select ?description where { 
+			?Concept schema:name ?name
+			OPTIONAL {?Concept kgbs:differsFrom ?relatesTo.}
+			OPTIONAL {?relatesTo schema:description ?description.}
+			filter (LCASE(?name) = LCASE("${first_parameter}") || LCASE(?name) = LCASE("${second_parameter}"))
+		}
+	`});
 }
