@@ -48,15 +48,16 @@ function callGraphDb(req, res) {
 	switch (req.body.queryResult.intent.displayName) {
 		case "What is Type Question": 
 			var parameter = Object.values(req.body.queryResult.parameters)[0];
-
 			encoded_query = query_for_what_is_questions(parameter)
 			break;
 		case "Difference Type Question":
 			var first_parameter = Object.values(Object.values(req.body.queryResult.parameters)[0])[0];
 			var second_parameter = Object.values(Object.values(req.body.queryResult.parameters)[0])[1];
-
 			encoded_query = query_for_difference_questions(first_parameter, second_parameter);
 			break;
+		case "List Type Questions": 
+			var parameter = Object.values(req.body.queryResult.parameters)[0];
+			encoded_query = query_for_list_questions(parameter)
 		default: {
 			return res.json({
 				fulfillmentText: 'Webhook Error: Intent could not be parsed.',
@@ -98,6 +99,8 @@ function response_validation(req, response_value_array) {
 	switch (req.body.queryResult.intent.displayName) {
 		case "What is Type Question":
 			return response_value_array[0]
+		case "List type Question":
+			return "Here is the list: " + response_value_array.join(", ")
 		case "Difference Type Question":
 			if (response_value_array[0] == response_value_array[1]) {
 				return response_value_array[0];
@@ -131,6 +134,30 @@ function query_for_difference_questions(first_parameter, second_parameter){
 			OPTIONAL {?Concept kgbs:differsFrom ?relatesTo.}
 			OPTIONAL {?relatesTo schema:description ?description.}
 			filter (LCASE(?name) = LCASE("${first_parameter}") || LCASE(?name) = LCASE("${second_parameter}"))
+		}
+	`});
+}
+
+function query_for_list_questions(parameter){
+	return querystring.stringify({query: `
+		PREFIX schema: <http://schema.org/>
+		PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
+		PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+							
+		select ?value where { 
+			{
+				?Concept schema:name ?name
+				OPTIONAL {?Concept skos:narrower ?specialization.}
+				OPTIONAL {?specialization schema:name ?value.}
+				filter (LCASE(?name) = LCASE("${parameter}")) .
+			}    
+			union 
+			{
+				?Concept schema:alternateName ?name
+				OPTIONAL {?Concept skos:narrower ?specialization.}
+				OPTIONAL {?specialization schema:name ?value.}
+				filter (LCASE(?name) = LCASE("${parameter}")) .
+			}
 		}
 	`});
 }
