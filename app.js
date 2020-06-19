@@ -100,7 +100,7 @@ function response_validation(req, response_value_array) {
 			return response_value_array[0]
 		case "Difference Type Question":
 			if (response_value_array[0] == response_value_array[1]) {
-				return distinct_values[0];
+				return response_value_array[0];
 			} else {
 				return "The requested concepts cannot be compared"
 			}
