@@ -68,7 +68,8 @@ function callGraphDb(req, res) {
 	let url = host_name + encoded_query
 	
 	axios.get(url,authenticationParams).then(response =>{			
-		var response_value_array = collectResponseDataFromGraphDb(response)
+		var response_value_array = collectResponseDataFromGraphDb(response) (typeof response.data.results.bindings[0].purpose === 'undefined') ? response.data.results.bindings[0].description.value 
+		: response.data.results.bindings[0].purpose.value;	// checks out if the return type is 'purpose' or 'description' and set the value for fulfilmment text..
 
 		let response_value = response_validation(req, response_value_array)
 
@@ -88,7 +89,7 @@ function callGraphDb(req, res) {
 function collectResponseDataFromGraphDb(response) {
 	var ret_array
 	for (data in response.data.results.bindings) {
-		ret_array += (typeof data.purpose === 'undefined') ? data.description.value : data.purpose.value;
+		ret_array += data.description.value;
 	}
 	return ret_array;
 }
