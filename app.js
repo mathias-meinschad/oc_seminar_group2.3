@@ -68,8 +68,10 @@ function callGraphDb(req, res) {
 	let url = host_name + encoded_query
 	
 	axios.get(url,authenticationParams).then(response =>{			
-		let response_value = (typeof response.data.results.bindings[0].purpose === 'undefined') ? response.data.results.bindings[0].description.value 
+		var response_value_array = collectResponseDataFromGraphDb(response) (typeof response.data.results.bindings[0].purpose === 'undefined') ? response.data.results.bindings[0].description.value 
 		: response.data.results.bindings[0].purpose.value;	// checks out if the return type is 'purpose' or 'description' and set the value for fulfilmment text..
+
+		let response_value = response_validation(req, response_value_array)
 
 		return res.json({
 			fulfillmentText: response_value,
@@ -82,6 +84,28 @@ function callGraphDb(req, res) {
 			source: 'testApp'
 		})
 	});
+}
+
+function collectResponseDataFromGraphDb(response) {
+	var ret_array
+	for (data in response.data.results.bindings) {
+		ret_array += (typeof data.purpose === 'undefined') ? data.description.value : data.purpose.value;
+	}
+	return ret_array;
+}
+
+function response_validation(req, response_value_array) {
+	switch (req.body.queryResult.intent.displayName) {
+		case "What is Type Question":
+			return response_value_array[0]
+		case "Difference Type Question":
+			var distinct_values = new Set(response_value_array)
+			if (distinct_values.length == 1) {
+				return distinct_values[0];
+			} else {
+				return "The requested concepts cannot be compared"
+			}
+	}
 }
 
 function query_for_what_is_questions(parameter){
@@ -100,14 +124,14 @@ function query_for_what_is_questions(parameter){
 
 function query_for_difference_questions(first_parameter, second_parameter){
 	return querystring.stringify({query: `
-			PREFIX schema: <http://schema.org/>
-			PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
-			select * where { 
-				?Concept schema:name ?name.
-				OPTIONAL {?Concept kgbs:purpose ?purpose.}
-				OPTIONAL {?Concept schema:description ?description.}
-				filter contains(LCASE(?name), LCASE("${first_parameter}"))
-			}
-		`
-	});
+		PREFIX schema: <http://schema.org/>
+		PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
+					
+		select ?description where { 
+			?Concept schema:name ?name
+			OPTIONAL {?Concept kgbs:differsFrom ?relatesTo.}
+			OPTIONAL {?relatesTo schema:description ?description.}
+			filter (LCASE(?name) = LCASE("${first_parameter}") || LCASE(?name) = LCASE("${second_parameter}"))
+		}
+	`});
 }
