@@ -74,6 +74,8 @@ function callGraphDb(req, res) {
 
 		let response_value = response_validation(req, response_value_array)
 
+		console.log(response_value)
+
 		return res.json({
 			fulfillmentText: response_value,
 			source: 'testApp'
@@ -101,6 +103,8 @@ function response_validation(req, response_value_array) {
 		case "What is Type Question":
 			return response_value_array[0]
 		case "List type Question":
+			console.log(response_value_array[0])
+			console.log(response_value_array[1])
 			return "Here is the list: " + response_value_array.join(", ")
 		case "Difference Type Question":
 			if (response_value_array[0] == response_value_array[1]) {
