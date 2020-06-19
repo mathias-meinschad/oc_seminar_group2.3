@@ -32,16 +32,7 @@ app.post('/testApp', (req, res) => {
 	try {
 		console.log("Intent is: " + req.body.queryResult.intent.displayName)
 
-		switch (req.body.queryResult.intent.displayName) {
-			case "What is Type Question": 
-				return callGraphDb(req, res)
-			default: {
-					return res.json({
-						fulfillmentText: 'Webhook Error: Intent could not be parsed.',
-						source: 'testApp'
-					})
-				}
-		}
+		callGraphDb(req, res)
 	} catch (e) {
 		console.log(e)
 		return res.json({
@@ -52,21 +43,29 @@ app.post('/testApp', (req, res) => {
 })
 
 function callGraphDb(req, res) {
-	var requested_intent = req.body.queryResult.parameters.placeholder_generated_entities;
-
-	var encoded_query = querystring.stringify({query: `
-			PREFIX schema: <http://schema.org/>
-
-			select * where { 
-				?Concept schema:name ?name.
-				OPTIONAL {?Concept schema:purpose ?purpose.}
-				OPTIONAl {?Concept schema:description ?description.}
-				filter contains(LCASE(?name), LCASE("${requested_intent}"))
-			}
-		`
-		});	// pre-defined query sample.. needs to be improved to handle complicated queries -> only returns purpose or description for the passed 'name'..
-	
 	let url = host_name + encoded_query
+
+	var encoded_query;
+
+	switch (req.body.queryResult.intent.displayName) {
+		case "What is Type Question": 
+			var parameter = Object.values(req.body.queryResult.parameters)[0];
+
+			encoded_query = query_for_what_is_questions(parameter)
+			break;
+		case "Difference Type Question":
+			var first_parameter = Object.values(Object.values(req.body.queryResult.parameters)[0])[0];
+			var second_parameter = Object.values(Object.values(req.body.queryResult.parameters)[0])[1];
+
+			encoded_query = query_for_difference_questions(first_parameter, second_parameter);
+			break;
+		default: {
+			return res.json({
+				fulfillmentText: 'Webhook Error: Intent could not be parsed.',
+				source: 'testApp'
+			})
+		}
+	}
 	
 	axios.get(url,authenticationParams).then(response =>{			
 		let response_value = (typeof response.data.results.bindings[0].purpose === 'undefined') ? response.data.results.bindings[0].description.value 
@@ -79,5 +78,33 @@ function callGraphDb(req, res) {
 	}).catch(error => {
 		console.log(error);
 		res.send(error);
+	});
+}
+
+function query_for_what_is_questions(req_intent){
+	return querystring.stringify({query: `
+			PREFIX schema: <http://schema.org/>
+			PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
+			select * where { 
+				?Concept schema:name ?name.
+				OPTIONAL {?Concept kgbs:purpose ?purpose.}
+				OPTIONAL {?Concept schema:description ?description.}
+				filter contains(LCASE(?name), LCASE("${req_intent}"))
+			}
+		`
+	});
+}
+
+function query_for_difference_questions(req_intent){
+	return querystring.stringify({query: `
+			PREFIX schema: <http://schema.org/>
+			PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
+			select * where { 
+				?Concept schema:name ?name.
+				OPTIONAL {?Concept kgbs:purpose ?purpose.}
+				OPTIONAL {?Concept schema:description ?description.}
+				filter contains(LCASE(?name), LCASE("${req_intent}"))
+			}
+		`
 	});
 }
