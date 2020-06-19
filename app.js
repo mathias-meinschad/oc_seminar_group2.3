@@ -43,8 +43,6 @@ app.post('/testApp', (req, res) => {
 })
 
 function callGraphDb(req, res) {
-	let url = host_name + encoded_query
-
 	var encoded_query;
 
 	switch (req.body.queryResult.intent.displayName) {
@@ -66,6 +64,8 @@ function callGraphDb(req, res) {
 			})
 		}
 	}
+
+	let url = host_name + encoded_query
 	
 	axios.get(url,authenticationParams).then(response =>{			
 		let response_value = (typeof response.data.results.bindings[0].purpose === 'undefined') ? response.data.results.bindings[0].description.value 
