@@ -58,6 +58,7 @@ function callGraphDb(req, res) {
 		case "List Type Questions": 
 			var parameter = Object.values(req.body.queryResult.parameters)[0];
 			encoded_query = query_for_list_questions(parameter)
+			break;
 		default: {
 			return res.json({
 				fulfillmentText: 'Webhook Error: Intent could not be parsed.',
