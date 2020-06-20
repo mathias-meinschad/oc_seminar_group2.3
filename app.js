@@ -123,8 +123,7 @@ function query_for_what_is_questions(parameter){
 		PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
 		select ?description where { 
 			?Concept schema:name ?name.
-			OPTIONAL {?Concept kgbs:purpose ?purpose.}
-			OPTIONAL {?Concept schema:description ?description.}
+			?Concept schema:description ?description .
 			filter (LCASE(?name) = LCASE("${parameter}"))
 		}
 	`});
