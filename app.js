@@ -107,7 +107,7 @@ function response_validation(req, response_value_array) {
 		case "List Type Questions":
 			return "Here is the list: " + response_value_array.join(", ")
 		case "Step Type Questions":
-			return "Here are the steps: " + response_value_array.join(", ")
+			return "Here are the steps: " + response_value_array.join(", then ")
 		case "Difference Type Question":
 			if (response_value_array[0] == response_value_array[1]) {
 				return response_value_array[0];
@@ -119,16 +119,15 @@ function response_validation(req, response_value_array) {
 
 function query_for_what_is_questions(parameter){
 	return querystring.stringify({query: `
-			PREFIX schema: <http://schema.org/>
-			PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
-			select * where { 
-				?Concept schema:name ?name.
-				OPTIONAL {?Concept kgbs:purpose ?purpose.}
-				OPTIONAL {?Concept schema:description ?description.}
-				filter contains(LCASE(?name), LCASE("${parameter}"))
-			}
-		`
-	});
+		PREFIX schema: <http://schema.org/>
+		PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
+		select ?description where { 
+			?Concept schema:name ?name.
+			OPTIONAL {?Concept kgbs:purpose ?purpose.}
+			OPTIONAL {?Concept schema:description ?description.}
+			filter (LCASE(?name) = LCASE("${parameter}"))
+		}
+	`});
 }
 
 function query_for_difference_questions(first_parameter, second_parameter){
