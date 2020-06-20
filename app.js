@@ -101,6 +101,10 @@ function collectResponseDataFromGraphDb(response) {
 }
 
 function response_validation(req, response_value_array) {
+	if (response_value_array.length == 0) {
+		return "No entry found in GraphDB."
+	}
+
 	switch (req.body.queryResult.intent.displayName) {
 		case "What is Type Question":
 			return response_value_array[0]
