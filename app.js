@@ -59,6 +59,10 @@ function callGraphDb(req, res) {
 			var parameter = Object.values(req.body.queryResult.parameters)[0];
 			encoded_query = query_for_list_questions(parameter)
 			break;
+		case "Step Type Questions": 
+			var parameter = Object.values(req.body.queryResult.parameters)[0];
+			encoded_query = query_for_step_questions(parameter)
+			break;
 		default: {
 			return res.json({
 				fulfillmentText: 'Webhook Error: Intent could not be parsed.',
@@ -102,6 +106,8 @@ function response_validation(req, response_value_array) {
 			return response_value_array[0]
 		case "List Type Questions":
 			return "Here is the list: " + response_value_array.join(", ")
+		case "Step Type Questions":
+			return "Here are the steps: " + response_value_array.join(", ")
 		case "Difference Type Question":
 			if (response_value_array[0] == response_value_array[1]) {
 				return response_value_array[0];
@@ -159,6 +165,20 @@ function query_for_list_questions(parameter){
 				OPTIONAL {?specialization schema:name ?description.}
 				filter (LCASE(?name) = LCASE("${parameter}")) .
 			}
+		}
+	`});
+}
+
+function query_for_step_questions(parameter){
+	return querystring.stringify({query: `
+		PREFIX schema: <http://schema.org/>
+		PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
+							
+		select ?description where {
+			?Concept schema:name ?name .
+			?Concept schema:step: ?Object .
+			OPTIONAL { ?Object schema:text ?description . }
+			filter contains (LCASE(?name), LCASE("verification process")) .
 		}
 	`});
 }
