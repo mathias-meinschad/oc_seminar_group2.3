@@ -178,7 +178,7 @@ function query_for_step_questions(parameter){
 			?Concept schema:name ?name .
 			?Concept schema:step: ?Object .
 			OPTIONAL { ?Object schema:text ?description . }
-			filter contains (LCASE(?name), LCASE("verification process")) .
+			filter contains (LCASE(?name), LCASE("${parameter}")) .
 		}
 	`});
 }
