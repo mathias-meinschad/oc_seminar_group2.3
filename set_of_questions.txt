@@ -1,7 +1,7 @@
 What is ... type of questions:
 	+52. What is the purpose of knowledge generation tools?
 	+56. What is meant by data lifting?											
-	57.	What is data lifting and what are possible approaches?
+	57. What is data lifting and what are possible approaches?
 	+62. What is the purpose of the semantify.it AnnotationEditor?
 	+67. What is tokenization?
 	+68. What is stemming?
@@ -12,7 +12,7 @@ What is ... type of questions:
 	+73. What is chunking?
 	+74. What is syntactic parsing?
 	+75. What is relation extraction?
-	+76.	What is semantic role labeling?
+	+76. What is semantic role labeling?
 	+77. What is co-reference resolution?
 	82. What is manual editing?					// 2 result appears, we need to get the second one
 	+83. What is semi-automatic editing?
