@@ -95,11 +95,11 @@ function collectResponseDataFromGraphDb(response) {
 	var ret_array = []
 	for (i = 0; i < response.data.results.bindings.length; i++) {
 		console.log(JSON.stringify(response.data.results));
-		if ('description' in response.data.results.bindings[i]) {
-			ret_array[i] = response.data.results.bindings[i].description.value;
-		}
 		if ('purpose' in response.data.results.bindings[i]) {
 			ret_array[i] = response.data.results.bindings[i].purpose.value;
+		}
+		if ('description' in response.data.results.bindings[i]) {
+			ret_array[i] = response.data.results.bindings[i].description.value;
 		}
 		else {
 			ret_array[i] = "No description or purpose found in result of Graph DB."
