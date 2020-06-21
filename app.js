@@ -94,8 +94,15 @@ function callGraphDb(req, res) {
 function collectResponseDataFromGraphDb(response) {
 	var ret_array = []
 	for (i = 0; i < response.data.results.bindings.length; i++) {
-		ret_array[i] = (typeof response.data.results.bindings[i].purpose === 'undefined') ? response.data.results.bindings[i].description.value 
-																						  : response.data.results.bindings[i].purpose.value;
+		if ('description' in response.data.results.bindings[i]) {
+			ret_array[i] = response.data.results.bindings[i].description.value;
+		}
+		if ('purpose' in response.data.results.bindings[i]) {
+			ret_array[i] = response.data.results.bindings[i].purpose.value;
+		}
+		else {
+			ret_array[i] = "No description or purpose found in result of Graph DB."
+		}
 	}
 	return ret_array;
 }
@@ -125,10 +132,20 @@ function query_for_what_is_questions(parameter){
 	return querystring.stringify({query: `
 		PREFIX schema: <http://schema.org/>
 		PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
-		select ?description where { 
-			?Concept schema:name ?name.
-			?Concept schema:description ?description .
-			filter (LCASE(?name) = LCASE("${parameter}"))
+		select ?description ?purpose where { 
+			{
+				?Concept schema:name ?name.
+				OPTIONAL { ?Concept schema:description ?description . }
+				OPTIONAL { ?Concept kgbs:purpose ?purpose . }
+				filter (LCASE(?name) = LCASE("${parameter}"))
+			}
+			union 
+			{
+				?Concept schema:alternateName ?name.
+				OPTIONAL { ?Concept schema:description ?description . }
+				OPTIONAL { ?Concept kgbs:purpose ?purpose . }
+				filter (LCASE(?name) = LCASE("${parameter}"))
+			}
 		}
 	`});
 }
