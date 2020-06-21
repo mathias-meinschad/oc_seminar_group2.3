@@ -63,6 +63,10 @@ function callGraphDb(req, res) {
 			var parameter = Object.values(req.body.queryResult.parameters)[0];
 			encoded_query = query_for_step_questions(parameter)
 			break;
+		case "Example Type Questions": 
+			var parameter = Object.values(req.body.queryResult.parameters)[0];
+			encoded_query = query_for_step_questions(parameter)
+			break;
 		default: {
 			return res.json({
 				fulfillmentText: 'Webhook Error: Intent could not be parsed.',
@@ -119,6 +123,8 @@ function response_validation(req, response_value_array) {
 			return "Here is the list: " + response_value_array.join(", ")
 		case "Step Type Questions":
 			return "Here are the steps: " + response_value_array.join(", then ")
+		case "Example Type Questions": 
+			return "Examples are: " + response_value_array.join(". ")
 		case "Difference Type Question":
 			if (response_value_array[0] == response_value_array[1]) {
 				return response_value_array[0];
@@ -198,6 +204,20 @@ function query_for_step_questions(parameter){
 			?Concept schema:step: ?Object .
 			OPTIONAL { ?Object schema:text ?description . }
 			filter contains (LCASE(?name), LCASE("${parameter}")) .
+		}
+	`});
+}
+
+
+function query_for_example_questions(parameter) {
+	return querystring.stringify({query: `
+		PREFIX schema: <http://schema.org/>
+		PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+		select ?description where { 
+				?Concept schema:name ?name.
+				optional { ?Concept skos:example ?example . }
+				optional {?example schema:description ?description . }
+				filter (LCASE(?name) = LCASE("${parameter}"))
 		}
 	`});
 }
