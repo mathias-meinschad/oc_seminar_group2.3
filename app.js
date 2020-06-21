@@ -59,6 +59,14 @@ function callGraphDb(req, res) {
 			var parameter = Object.values(req.body.queryResult.parameters)[0];
 			encoded_query = query_for_list_questions(parameter)
 			break;
+		case "Step Type Questions": 
+			var parameter = Object.values(req.body.queryResult.parameters)[0];
+			encoded_query = query_for_step_questions(parameter)
+			break;
+		case "Example Type Questions": 
+			var parameter = Object.values(req.body.queryResult.parameters)[0];
+			encoded_query = query_for_example_questions(parameter)
+			break;
 		default: {
 			return res.json({
 				fulfillmentText: 'Webhook Error: Intent could not be parsed.',
@@ -90,18 +98,33 @@ function callGraphDb(req, res) {
 function collectResponseDataFromGraphDb(response) {
 	var ret_array = []
 	for (i = 0; i < response.data.results.bindings.length; i++) {
-		ret_array[i] = (typeof response.data.results.bindings[i].purpose === 'undefined') ? response.data.results.bindings[i].description.value 
-																						  : response.data.results.bindings[i].purpose.value;
+		if ('purpose' in response.data.results.bindings[i]) {
+			ret_array[i] = response.data.results.bindings[i].purpose.value;
+		}
+		else if ('description' in response.data.results.bindings[i]) {
+			ret_array[i] = response.data.results.bindings[i].description.value;
+		}
+		else {
+			ret_array[i] = "No description or purpose found in result of Graph DB."
+		}
 	}
 	return ret_array;
 }
 
 function response_validation(req, response_value_array) {
+	if (response_value_array.length == 0) {
+		return "No entry found in GraphDB."
+	}
+
 	switch (req.body.queryResult.intent.displayName) {
 		case "What is Type Question":
 			return response_value_array[0]
 		case "List Type Questions":
 			return "Here is the list: " + response_value_array.join(", ")
+		case "Step Type Questions":
+			return "Here are the steps: " + response_value_array.join(", then ")
+		case "Example Type Questions": 
+			return "Examples are: " + response_value_array.join(" ")
 		case "Difference Type Question":
 			if (response_value_array[0] == response_value_array[1]) {
 				return response_value_array[0];
@@ -113,16 +136,24 @@ function response_validation(req, response_value_array) {
 
 function query_for_what_is_questions(parameter){
 	return querystring.stringify({query: `
-			PREFIX schema: <http://schema.org/>
-			PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
-			select * where { 
+		PREFIX schema: <http://schema.org/>
+		PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
+		select ?description ?purpose where { 
+			{
 				?Concept schema:name ?name.
-				OPTIONAL {?Concept kgbs:purpose ?purpose.}
-				OPTIONAL {?Concept schema:description ?description.}
-				filter contains(LCASE(?name), LCASE("${parameter}"))
+				OPTIONAL { ?Concept schema:description ?description . }
+				OPTIONAL { ?Concept kgbs:purpose ?purpose . }
+				filter (LCASE(?name) = LCASE("${parameter}"))
 			}
-		`
-	});
+			union 
+			{
+				?Concept schema:alternateName ?name.
+				OPTIONAL { ?Concept schema:description ?description . }
+				OPTIONAL { ?Concept kgbs:purpose ?purpose . }
+				filter (LCASE(?name) = LCASE("${parameter}"))
+			}
+		}
+	`});
 }
 
 function query_for_difference_questions(first_parameter, second_parameter){
@@ -159,6 +190,34 @@ function query_for_list_questions(parameter){
 				OPTIONAL {?specialization schema:name ?description.}
 				filter (LCASE(?name) = LCASE("${parameter}")) .
 			}
+		}
+	`});
+}
+
+function query_for_step_questions(parameter){
+	return querystring.stringify({query: `
+		PREFIX schema: <http://schema.org/>
+		PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
+							
+		select ?description where {
+			?Concept schema:name ?name .
+			?Concept schema:step: ?Object .
+			OPTIONAL { ?Object schema:text ?description . }
+			filter contains (LCASE(?name), LCASE("${parameter}")) .
+		}
+	`});
+}
+
+
+function query_for_example_questions(parameter) {
+	return querystring.stringify({query: `
+		PREFIX schema: <http://schema.org/>
+		PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+		select ?description where { 
+				?Concept schema:name ?name.
+				optional { ?Concept skos:example ?example . }
+				optional {?example schema:description ?description . }
+				filter (LCASE(?name) = LCASE("${parameter}"))
 		}
 	`});
 }
