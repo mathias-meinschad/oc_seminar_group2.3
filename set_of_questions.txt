@@ -1,52 +1,52 @@
 What is ... type of questions:
-	+52. What is the purpose of knowledge generation tools?
-	+56. What is meant by data lifting?											
-	57. What is data lifting and what are possible approaches?
-	+62. What is the purpose of the semantify.it AnnotationEditor?
-	+67. What is tokenization?
-	+68. What is stemming?
-	+69. What is lemmatization?
-	+70. What is sentence boundary disambiguation?
-	+71. What is named entity recognition?
-	+72. What is part-of-speech tagging?
-	+73. What is chunking?
-	+74. What is syntactic parsing?
-	+75. What is relation extraction?
-	+76. What is semantic role labeling?
-	+77. What is co-reference resolution?
-	82. What is manual editing?					// 2 result appears, we need to get the second one
-	+83. What is semi-automatic editing?
+	52. What is the purpose of knowledge generation tools?			- purpose is deleted from the database I guess
+	56. What is meant by data lifting?					+ 				
+	57.	What is data lifting and what are possible approaches?		+
+	62. What is the purpose of the semantify.it AnnotationEditor?   	- purpose is deleted from the database I guess
+	67. What is tokenization?						+
+	68. What is stemming?							+
+	69. What is lemmatization?						+
+	70. What is sentence boundary disambiguation?				+
+	71. What is named entity recognition?					+
+	72. What is part-of-speech tagging?					+
+	73. What is chunking?							+
+	74. What is syntactic parsing?						+
+	75. What is relation extraction?					+
+	76.	What is semantic role labeling?					+
+	77. What is co-reference resolution?					+
+	82. What is manual editing?						+
+	83. What is semi-automatic editing?					+
 	
 Which ... questions:
-	53. Which tool can be used for manual editing?
-	58. Which database is used by the semantify.it platform in order to store mappings?
-	60. Which approaches/tools to extract knowledge from text and web pages exist?
-	63. In which format is the generated annotation source presented by the semantify.it AnnotationEditor?
+	53. Which tool can be used for manual editing?								- Can't see the answer.
+	58. Which database is used by the semantify.it platform in order to store mappings?			- Mongo
+	60. Which approaches/tools to extract knowledge from text and web pages exist?				+ see example tab
+	63. In which format is the generated annotation source presented by the semantify.it AnnotationEditor?	- need to re-define the question to get "JSON-LD" key word.
 	65. In which way does RML extend R2RML?
 	
 How ... questions:
-	59. How can automatic annotation tools extract data from the web?
-	61. How does the verification process work?
-	64. How does semi-automatic editing supports the user?
-	+81. How can we automatically annotate data?
+	59. How can automatic annotation tools extract data from the web?	+ see example tab
+	61. How does the verification process work?				+ see example tab
+	64. How does semi-automatic editing supports the user?			+ What is semi-automatic editing
+	81. How can we automatically annotate data?				+ What is automatic data annotation
 	
 Difference ... questions:
-	65. In which way does RML extend R2RML?
-	78. What is the difference between the validation and the verification process?
-	84. ?
+	65. In which way does RML extend R2RML?							+ What is the difference between RML and R2RML
+	78. What is the difference between the validation and the verification process?		+
+	84. ?	-> I can not see the questions number 84 and 85.
 
 Multi Layered questions:
 	example:
-		54. What kind of techniques to extract information from an unstructured content on a web page exist?
-		57. What is data lifting and what are possible approaches?
-		59. How can automatic annotation tools extract data from the web?
-		60. Which approaches/tools to extract knowledge from text and web pages exist?
-		80. What are the causes of errors during the annotation process?
+		54. What kind of techniques to extract information from an unstructured content on a web page exist?	+ What are the examples of unstructured content extraction technique
+		57. What is data lifting and what are possible approaches?						+ What are the examples of data lifting tool
+		59. How can automatic annotation tools extract data from the web?					+ What are the examples of automatic annotation tools
+		60. Which approaches/tools to extract knowledge from text and web pages exist?				+ What are the examples of knowledge extraction approach
+		80. What are the causes of errors during the annotation process?					+ What are the examples of annotation error cause
 	step:
-		61. How does the verification process work?
-		79. Can you list the 4 steps of the verification process?
+		61. How does the verification process work?				+ What are the steps of the verification
+		79. Can you list the 4 steps of the verification process?		+ What are the steps of the verification
 	narrower:
-		66. What are the typical tasks of NLP?
+		66. What are the typical tasks of NLP?					+ Added narrower section to handle the question
 
 
 

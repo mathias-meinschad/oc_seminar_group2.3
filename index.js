@@ -30,15 +30,9 @@ app.listen(port, () => {
 
 app.post('/testApp', (req, res) => {
 	try {
-		console.log("Intent is: " + req.body.queryResult.intent.displayName);
-		//console.log(req.body.queryResult);
-		if(typeof req.body.queryResult.intent.displayName !== 'undefined')	return callGraphDb(req, res)
-	
-		else	return res.json({
-						fulfillmentText: 'Webhook Error: Intent could not be parsed.',
-						source: 'testApp'
-				})
-				
+		console.log("Intent is: " + req.body.queryResult.intent.displayName)
+
+		callGraphDb(req, res)
 	} catch (e) {
 		console.log(e)
 		return res.json({
@@ -49,32 +43,48 @@ app.post('/testApp', (req, res) => {
 })
 
 function callGraphDb(req, res) {
-	//var requested_intent = req.body.queryResult.parameters.placeholder_generated_entities;
-	
-	var requested_intent = Object.values(req.body.queryResult.parameters)[0];
-	
 	var encoded_query;
-	
-	switch (req.body.queryResult.intent.displayName) {	// We can call the query functions according to question types...
-		case "What is Type Question":
-			encoded_query = query1(requested_intent);
+
+	switch (req.body.queryResult.intent.displayName) {
+		case "What is Type Question": 
+			var parameter = Object.values(req.body.queryResult.parameters)[0];
+			encoded_query = query_for_what_is_questions(parameter)
 			break;
-		case "nlp tasks explanation":
-			encoded_query = query1(requested_intent);
+		case "Difference Type Question":
+			var first_parameter = Object.values(Object.values(req.body.queryResult.parameters)[0])[0];
+			var second_parameter = Object.values(Object.values(req.body.queryResult.parameters)[0])[1];
+			encoded_query = query_for_difference_questions(first_parameter, second_parameter);
 			break;
-		default: {	// I don't know if it is necessary since Dialogflow has a Default Fallback Intent...
+		case "List Type Questions": 
+			var parameter = Object.values(req.body.queryResult.parameters)[0];
+			encoded_query = query_for_list_questions(parameter)
+			break;
+		case "Step Type Questions": 
+			var parameter = Object.values(req.body.queryResult.parameters)[0];
+			encoded_query = query_for_step_questions(parameter)
+			break;
+		case "Example Type Questions": 
+			var parameter = Object.values(req.body.queryResult.parameters)[0];
+			encoded_query = query_for_example_questions(parameter)
+			break;
+		case "Narrower Type Question": 
+			var parameter = Object.values(req.body.queryResult.parameters)[0];
+			encoded_query = query_for_narrower_questions(parameter)
+			break;
+		default: {
 			return res.json({
-				fulfillmentText: 'Sorry! I can\'t help you about this question',
+				fulfillmentText: 'Webhook Error: Intent could not be parsed.',
 				source: 'testApp'
 			})
 		}
 	}
-	
-	let url = host_name + encoded_query;
+
+	let url = host_name + encoded_query
 	
 	axios.get(url,authenticationParams).then(response =>{			
-		let response_value = (typeof response.data.results.bindings[0].purpose === 'undefined') ? response.data.results.bindings[0].description.value 
-		: response.data.results.bindings[0].purpose.value;	// checks out if the return type is 'purpose' or 'description' and set the value for fulfilmment text..
+		var response_value_array = collectResponseDataFromGraphDb(response)
+
+		let response_value = response_validation(req, response_value_array)
 
 		return res.json({
 			fulfillmentText: response_value,
@@ -82,20 +92,162 @@ function callGraphDb(req, res) {
 		});
 	}).catch(error => {
 		console.log(error);
-		res.send(error);
+		return res.json({
+			fulfillmentText: 'Webhook Error: Failed getting data from GraphDb.',
+			source: 'testApp'
+		})
 	});
 }
 
-function query1(req_intent){	// First query to handle what is .. and nlp tasks .. questions
-	return querystring.stringify({query: `
-			PREFIX schema: <http://schema.org/>
-			PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
-			select * where { 
-				?Concept schema:name ?name.
-				OPTIONAL {?Concept kgbs:purpose ?purpose.}
-				OPTIONAL {?Concept schema:description ?description.}
-				filter contains(LCASE(?name), LCASE("${req_intent}"))
+function collectResponseDataFromGraphDb(response) {
+	var ret_array = []
+	for (i = 0; i < response.data.results.bindings.length; i++) {
+		if ('purpose' in response.data.results.bindings[i]) {
+			ret_array[i] = response.data.results.bindings[i].purpose.value;
+		}
+		else if ('description' in response.data.results.bindings[i]) {
+			ret_array[i] = response.data.results.bindings[i].description.value;
+		}
+		else if ('name' in response.data.results.bindings[i]) {
+			ret_array[i] = response.data.results.bindings[i].name.value;
+		}
+		else {
+			ret_array[i] = "No description or purpose found in result of Graph DB."
+		}
+	}
+	return ret_array;
+}
+
+function response_validation(req, response_value_array) {
+	if (response_value_array.length == 0) {
+		return "No entry found in GraphDB."
+	}
+
+	switch (req.body.queryResult.intent.displayName) {
+		case "What is Type Question":
+			return response_value_array[0]
+		case "List Type Questions":
+			return "Here is the list: " + response_value_array.join(", ")
+		case "Step Type Questions":
+			return "Here are the steps: " + response_value_array.join(", then ")
+		case "Example Type Questions": 
+			return "Examples are: " + response_value_array.join(" ")
+		case "Narrower Type Question": 
+			return "Tasks can be listed as; " + response_value_array.join(", ")
+		case "Difference Type Question":
+			if (response_value_array[0] == response_value_array[1]) {
+				return response_value_array[0];
+			} else {
+				return "The requested concepts cannot be compared"
 			}
-		`
-		});
+	}
+}
+
+function query_for_what_is_questions(parameter){
+	return querystring.stringify({query: `
+		PREFIX schema: <http://schema.org/>
+		PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
+		select ?description ?purpose where { 
+			{
+				?Concept schema:name ?name.
+				OPTIONAL { ?Concept schema:description ?description . }
+				OPTIONAL { ?Concept kgbs:purpose ?purpose . }
+				filter (LCASE(?name) = LCASE("${parameter}"))
+			}
+			union 
+			{
+				?Concept schema:alternateName ?name.
+				OPTIONAL { ?Concept schema:description ?description . }
+				OPTIONAL { ?Concept kgbs:purpose ?purpose . }
+				filter (LCASE(?name) = LCASE("${parameter}"))
+			}
+		}
+	`});
+}
+
+function query_for_difference_questions(first_parameter, second_parameter){
+	return querystring.stringify({query: `
+		PREFIX schema: <http://schema.org/>
+		PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
+		PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+		PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+					
+		select ?description where { 
+			?Concept schema:name ?name.
+    		?relatesTo rdf:type ?type.
+			?type rdfs:label ?labelcheck.
+    		?relatesTo schema:name ?check_name.
+    		?relatesTo schema:description ?description.
+			filter (LCASE(?name) = LCASE("${first_parameter}") || LCASE(?name) = LCASE("${second_parameter}"))
+            filter(?labelcheck = "Difference")
+    		filter (contains (LCASE(?check_name),LCASE("${first_parameter}")) || contains (LCASE(?check_name),LCASE("${second_parameter}")))
+		}
+	`});
+}
+
+function query_for_list_questions(parameter){
+	return querystring.stringify({query: `
+		PREFIX schema: <http://schema.org/>
+		PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
+		PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+							
+		select ?description where { 
+			{
+				?Concept schema:name ?name
+				OPTIONAL {?Concept skos:narrower ?specialization.}
+				OPTIONAL {?specialization schema:name ?description.}
+				filter (LCASE(?name) = LCASE("${parameter}")) .
+			}    
+			union 
+			{
+				?Concept schema:alternateName ?name
+				OPTIONAL {?Concept skos:narrower ?specialization.}
+				OPTIONAL {?specialization schema:name ?description.}
+				filter (LCASE(?name) = LCASE("${parameter}")) .
+			}
+		}
+	`});
+}
+
+function query_for_step_questions(parameter){
+	return querystring.stringify({query: `
+		PREFIX schema: <http://schema.org/>
+		PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
+							
+		select ?description where {
+			?Concept schema:name ?name .
+			?Concept schema:step: ?Object .
+			OPTIONAL { ?Object schema:text ?description . }
+			filter contains (LCASE(?name), LCASE("${parameter}")) .
+		}
+	`});
+}
+
+
+function query_for_example_questions(parameter) {
+	return querystring.stringify({query: `
+		PREFIX schema: <http://schema.org/>
+		PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+		select ?name ?description where { 
+				?Concept schema:name ?target.
+				optional { ?Concept skos:example ?example . }
+				optional {?example schema:name ?name . }
+    			optional {?example schema:description ?description . }
+				filter (LCASE(?target) = LCASE("${parameter}"))
+		}
+	`});
+}
+
+function query_for_narrower_questions(parameter) {
+	return querystring.stringify({query: `
+		PREFIX schema: <http://schema.org/>
+			PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
+			PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+			select ?name where { 
+				?Concept schema:name ?target.
+				?Concept skos:narrower ?example . 
+    			?example schema:name ?name . 
+				filter contains(LCASE(?target), LCASE("${parameter}"))
+			}
+	`});
 }
