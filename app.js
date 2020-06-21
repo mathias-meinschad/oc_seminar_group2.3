@@ -94,7 +94,7 @@ function callGraphDb(req, res) {
 function collectResponseDataFromGraphDb(response) {
 	var ret_array = []
 	for (i = 0; i < response.data.results.bindings.length; i++) {
-		console.log(json.stringify(response));
+		console.log(JSON.stringify(response));
 		if ('description' in response.data.results.bindings[i]) {
 			ret_array[i] = response.data.results.bindings[i].description.value;
 		}
