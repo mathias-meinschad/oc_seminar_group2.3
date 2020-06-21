@@ -65,7 +65,7 @@ function callGraphDb(req, res) {
 			break;
 		case "Example Type Questions": 
 			var parameter = Object.values(req.body.queryResult.parameters)[0];
-			encoded_query = query_for_step_questions(parameter)
+			encoded_query = query_for_example_questions(parameter)
 			break;
 		default: {
 			return res.json({
