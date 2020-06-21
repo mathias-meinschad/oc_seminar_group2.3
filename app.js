@@ -124,7 +124,7 @@ function response_validation(req, response_value_array) {
 		case "Step Type Questions":
 			return "Here are the steps: " + response_value_array.join(", then ")
 		case "Example Type Questions": 
-			return "Examples are: " + response_value_array.join(". ")
+			return "Examples are: " + response_value_array.join(" ")
 		case "Difference Type Question":
 			if (response_value_array[0] == response_value_array[1]) {
 				return response_value_array[0];
