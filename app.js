@@ -137,20 +137,21 @@ function response_validation(req, response_value_array) {
 function query_for_what_is_questions(parameter){
 	return querystring.stringify({query: `
 		PREFIX schema: <http://schema.org/>
-		PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
+		PREFIX kgbs: <http://knowledgegraphbook.ai/schema/>
+		
 		select ?description ?purpose where { 
 			{
 				?Concept schema:name ?name.
 				OPTIONAL { ?Concept schema:description ?description . }
 				OPTIONAL { ?Concept kgbs:purpose ?purpose . }
-				filter (LCASE(?name) = LCASE("${parameter}"))
+				filter (LCASE(?name) = LCASE("knowledge generation tool"))
 			}
 			union 
 			{
 				?Concept schema:alternateName ?name.
 				OPTIONAL { ?Concept schema:description ?description . }
 				OPTIONAL { ?Concept kgbs:purpose ?purpose . }
-				filter (LCASE(?name) = LCASE("${parameter}"))
+				filter (LCASE(?name) = LCASE("knowledge generation tool"))
 			}
 		}
 	`});
