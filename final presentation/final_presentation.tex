@@ -245,55 +245,118 @@ WHERE {
 
 \end{frame}
 
-\subsection{Handling Intents}
-\subsubsection{What Type Question}
+%------------------------------------------------
+
+\section{Queries, Intents and Response Handling}
 \begin{frame}
-\frametitle{What Type Question}
+\frametitle{Queries, Intents and Response Handling}
 \infoForRightCorner{Name}
-\begin{center}
-\includegraphics[scale=0.5]{pictures/what_is_type_query.png}
-\end{center}
+\begin{itemize}
+\item Divided questions into the Intents.
+\item Defined a query for specific intent type.
+\item Response handling function for the queries.
+\end{itemize}
 \end{frame}
-\subsubsection{Difference Type Question}
+
+%------------------------------------------------
+\subsection{Intents}
 
 \begin{frame}
-\frametitle{Difference Type Question}
+\frametitle{Intents}
+\infoForRightCorner{Name}
+\begin{itemize}
+\item 6 question types defined in Dialogflow
+\begin{itemize}
+\item Difference Type Question
+\item Example Type Questions
+\item List Type Questions
+\item Narrower Type Question
+\item Step Type Questions
+\item What is Type Questions
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------
+\subsection{Queries}
+
+\begin{frame}
+\frametitle{Queries}
+\infoForRightCorner{Name}
+\begin{itemize}
+\item Queries are encoded with Query String module.
+\item For each intent type, we defined the following queries.
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------
+
+
+\begin{frame}
+\frametitle{Query for "What is Type Question"}
 \infoForRightCorner{Name}
 \begin{center}
-\includegraphics[scale=0.4]{pictures/difference_type_query.png}
+\includegraphics[scale=0.50]{pictures/what_is_type_query.png}
 \end{center}
 \end{frame}
-\subsubsection{List Type Question}
+
 \begin{frame}
-\frametitle{List Type Question}
+\frametitle{Query for "Difference Type Questions"}
+\infoForRightCorner{Name}
+\begin{center}
+\includegraphics[scale=0.45]{pictures/difference_type_query.png}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Query for "List Type Questions"}
 \infoForRightCorner{Name}
 \begin{center}
 \includegraphics[scale=0.5]{pictures/list_type_query.png}
 \end{center}
 \end{frame}
 
-\subsubsection{Example Type Question}
 \begin{frame}
-\frametitle{Example Type Question}
+\frametitle{Query for "Example Type Questions"}
 \infoForRightCorner{Name}
 \begin{center}
 \includegraphics[scale=0.5]{pictures/example_type_query.png}
 \end{center}
 \end{frame}
 
-\subsubsection{Step Type Question}
-
 \begin{frame}
-\frametitle{Step Type Question}
+\frametitle{Query for "Step Type Questions"}
 \infoForRightCorner{Name}
 \begin{center}
 \includegraphics[scale=0.5]{pictures/step_type_query.png}
 \end{center}
 \end{frame}
 
+\begin{frame}
+\frametitle{Query for "Narrower Type Questions"}
+\infoForRightCorner{Name}
+\begin{center}
+\includegraphics[scale=0.5]{pictures/narrower_type_query.png}
+\end{center}
+\end{frame}
+
+\subsection{Response Handling}
+
+\begin{frame}
+\frametitle{Response Handling}
+\infoForRightCorner{Name}
+\begin{center}
+\includegraphics[scale=0.50]{pictures/response_handling.png} 
+\end{center}
+\begin{itemize}
+\item 3 different types of response will be handled.
+\item Default text for error handling.
+\end{itemize}
+\end{frame}
+
 %------------------------------------------------
 
-\subsection{Problems}
+\section{Problems}
 
 \begin{frame}
 \frametitle{Problems}

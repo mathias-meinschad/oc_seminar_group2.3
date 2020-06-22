@@ -67,6 +67,10 @@ function callGraphDb(req, res) {
 			var parameter = Object.values(req.body.queryResult.parameters)[0];
 			encoded_query = query_for_example_questions(parameter)
 			break;
+		case "Narrower Type Question": 
+			var parameter = Object.values(req.body.queryResult.parameters)[0];
+			encoded_query = query_for_narrower_questions(parameter)
+			break;
 		default: {
 			return res.json({
 				fulfillmentText: 'Webhook Error: Intent could not be parsed.',
@@ -104,6 +108,9 @@ function collectResponseDataFromGraphDb(response) {
 		else if ('description' in response.data.results.bindings[i]) {
 			ret_array[i] = response.data.results.bindings[i].description.value;
 		}
+		else if ('name' in response.data.results.bindings[i]) {
+			ret_array[i] = response.data.results.bindings[i].name.value;
+		}
 		else {
 			ret_array[i] = "No description or purpose found in result of Graph DB."
 		}
@@ -124,7 +131,9 @@ function response_validation(req, response_value_array) {
 		case "Step Type Questions":
 			return "Here are the steps: " + response_value_array.join(", then ")
 		case "Example Type Questions": 
-			return "Examples are: " + response_value_array.join(" ")
+			return "Examples can be listed as: " + response_value_array.join(", ")
+		case "Narrower Type Question": 
+			return "Tasks can be listed as; " + response_value_array.join(", ")
 		case "Difference Type Question":
 			if (response_value_array[0] == response_value_array[1]) {
 				return response_value_array[0];
@@ -138,7 +147,6 @@ function query_for_what_is_questions(parameter){
 	return querystring.stringify({query: `
 		PREFIX schema: <http://schema.org/>
 		PREFIX kgbs: <http://knowledgegraphbook.ai/schema/>
-		
 		select ?description ?purpose where { 
 			{
 				?Concept schema:name ?name.
@@ -161,12 +169,18 @@ function query_for_difference_questions(first_parameter, second_parameter){
 	return querystring.stringify({query: `
 		PREFIX schema: <http://schema.org/>
 		PREFIX kgbs: <http://knowledgegraphbook.ai/schema/>
+		PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+		PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 					
 		select ?description where { 
-			?Concept schema:name ?name
-			OPTIONAL {?Concept kgbs:differsFrom ?relatesTo.}
-			OPTIONAL {?relatesTo schema:description ?description.}
+			?Concept schema:name ?name.
+    		?relatesTo rdf:type ?type.
+			?type rdfs:label ?labelcheck.
+    		?relatesTo schema:name ?check_name.
+    		?relatesTo schema:description ?description.
 			filter (LCASE(?name) = LCASE("${first_parameter}") || LCASE(?name) = LCASE("${second_parameter}"))
+            filter(?labelcheck = "Difference")
+    		filter (contains (LCASE(?check_name),LCASE("${first_parameter}")) || contains (LCASE(?check_name),LCASE("${second_parameter}")))
 		}
 	`});
 }
@@ -214,11 +228,26 @@ function query_for_example_questions(parameter) {
 	return querystring.stringify({query: `
 		PREFIX schema: <http://schema.org/>
 		PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-		select ?description where { 
-				?Concept schema:name ?name.
+		select ?name ?description where { 
+				?Concept schema:name ?target.
 				optional { ?Concept skos:example ?example . }
-				optional {?example schema:description ?description . }
-				filter (LCASE(?name) = LCASE("${parameter}"))
+				optional {?example schema:name ?name . }
+    			optional {?example schema:description ?description . }
+				filter (LCASE(?target) = LCASE("${parameter}"))
 		}
+	`});
+}
+
+function query_for_narrower_questions(parameter) {
+	return querystring.stringify({query: `
+		PREFIX schema: <http://schema.org/>
+			PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
+			PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+			select ?name where { 
+				?Concept schema:name ?target.
+				?Concept skos:narrower ?example . 
+    			?example schema:name ?name . 
+				filter contains(LCASE(?target), LCASE("${parameter}"))
+			}
 	`});
 }
