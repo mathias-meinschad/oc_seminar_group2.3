@@ -131,7 +131,7 @@ function response_validation(req, response_value_array) {
 		case "Step Type Questions":
 			return "Here are the steps: " + response_value_array.join(", then ")
 		case "Example Type Questions": 
-			return "Examples are: " + response_value_array.join(" ")
+			return "Examples can be listed as: " + response_value_array.join(", ")
 		case "Narrower Type Question": 
 			return "Tasks can be listed as; " + response_value_array.join(", ")
 		case "Difference Type Question":
@@ -146,7 +146,7 @@ function response_validation(req, response_value_array) {
 function query_for_what_is_questions(parameter){
 	return querystring.stringify({query: `
 		PREFIX schema: <http://schema.org/>
-		PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
+		PREFIX kgbs: <http://knowledgegraphbook.ai/schema/>
 		select ?description ?purpose where { 
 			{
 				?Concept schema:name ?name.
@@ -168,7 +168,7 @@ function query_for_what_is_questions(parameter){
 function query_for_difference_questions(first_parameter, second_parameter){
 	return querystring.stringify({query: `
 		PREFIX schema: <http://schema.org/>
-		PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
+		PREFIX kgbs: <http://knowledgegraphbook.ai/schema/>
 		PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 		PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 					
@@ -188,7 +188,7 @@ function query_for_difference_questions(first_parameter, second_parameter){
 function query_for_list_questions(parameter){
 	return querystring.stringify({query: `
 		PREFIX schema: <http://schema.org/>
-		PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
+		PREFIX kgbs: <http://knowledgegraphbook.ai/schema/>
 		PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 							
 		select ?description where { 
@@ -212,7 +212,7 @@ function query_for_list_questions(parameter){
 function query_for_step_questions(parameter){
 	return querystring.stringify({query: `
 		PREFIX schema: <http://schema.org/>
-		PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
+		PREFIX kgbs: <http://knowledgegraphbook.ai/schema/>
 							
 		select ?description where {
 			?Concept schema:name ?name .
