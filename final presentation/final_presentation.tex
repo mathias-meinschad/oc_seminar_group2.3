@@ -61,6 +61,8 @@
 
 %% Make top right box blank for each new frame
 \usepackage{tikz}
+\usepackage{listings}
+\lstset{language=SQL,morekeywords={PREFIX,java,rdf,rdfs,url}}
 \usepackage{graphicx} % Allows including images
 \usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
 \usepackage[utf8]{inputenc}
@@ -79,7 +81,7 @@
 \author{Mehmet Kardan, Hanna Köb, Mathias Meinschad, Daniel Linter} % Your name
 \institute[UCLA] % Your institution as it will appear on the bottom of every slide, may be shorthand to save space
 {
-University of Innsbruck - SIT \\ % Your institution for the title page
+University of Innsbruck - STI \\ % Your institution for the title page
 }
 \date{\today} % Date, can be changed to a custom date
 
@@ -90,7 +92,8 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 \end{frame}
 
 \begin{frame}
-\frametitle{Overview} % Table of contents slide, comment this block out to remove it
+\small
+\frametitle{Agenda} % Table of contents slide, comment this block out to remove it
 \infoForRightCorner{Name}
 \tableofcontents % Throughout your presentation, if you choose to use \section{} and \subsection{} commands, these will automatically be printed on this slide as an overview of your presentation
 \end{frame}
@@ -100,10 +103,10 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 %----------------------------------------------------------------------------------------
 
 %------------------------------------------------
-\section{Overview}
+\section{Introduction to Google Home}
 
 \begin{frame}
-\frametitle{Overview}
+\frametitle{Introduction to Google Home}
 \infoForRightCorner{Name}
 \begin{center}
 \includegraphics[scale=0.35]{pictures/google-home.png} 
@@ -115,6 +118,8 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 \item No programming skills required
 \end{itemize}
 \end{frame}
+
+\subsection{Device Types \& Traits}
 
 \begin{frame}
 \frametitle{Device Types \& Traits}
@@ -130,7 +135,7 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 
 %------------------------------------------------
 
-\section{Execution Path}
+\subsection{Execution Path}
 
 \begin{frame}
 \frametitle{Execution Path}
@@ -141,6 +146,20 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 \end{frame}
 
 %------------------------------------------------
+
+\section{Introduction to Dialogflow}
+
+\begin{frame}
+\infoForRightCorner{Name}
+\frametitle{Introduction to Dialogflow}
+\begin{center}
+\begin{itemize}
+\item Service developed and provided by Google
+\item Natural language tool to create conversational user interfaces for apps, chatbots, etc.
+\item By adding 'Training phrases' Dialogflow automatically trains the machine learning model
+\end{itemize}
+\end{center}
+\end{frame}
 
 \subsection{Intents}
 
@@ -177,27 +196,57 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 \end{center}
 \end{frame}
 
+\section{Implementation}
+
 \begin{frame}
-\frametitle{Architecture}
+\frametitle{Implementation}
 \infoForRightCorner{Name}
+\begin{itemize}
+\item Coding in JavaScript
+\end{itemize}
 \begin{center}
 \includegraphics[width=\textwidth]{pictures/fulfillment_flow2.png} 
 \end{center}
 \end{frame}
 
-
-\begin{frame}
-\frametitle{Communication}
-\infoForRightCorner{Name}
-\begin{center}
-\includegraphics[scale=0.22]{pictures/communication_btw.png}
-\end{center}
-\end{frame}
-
 %------------------------------------------------
 
-\section{Sparql Queries}
+\subsection{Entities Extraction}
+\begin{frame}[fragile]
+\frametitle{Entities Extraction}
+\infoForRightCorner{Hanna Köb}
+\begin{itemize}
+\item An entity for each class in the knowledge graph is created
+\begin{lstlisting}[basicstyle=\ttfamily,frame=single]
+SELECT DISTINCT ?class
+WHERE {
+	?s a ?class .
+}
+\end{lstlisting}
+\item Then schema.org's property \textit{name} is used to fill the entities with values
+\begin{lstlisting}[basicstyle=\ttfamily,frame=single]
+PREFIX sc: <http://schema.org/> 
+SELECT ?name 
+WHERE { 
+	?resource  a [entityTypeName] . 
+	?resource sc:name ?name . 
+}	
+\end{lstlisting}
+\end{itemize}
+\end{frame}
 
+\begin{frame}[fragile]
+\frametitle{Entities Extraction cont'd}
+\infoForRightCorner{Hanna Köb}
+
+\begin{center}
+\includegraphics[scale=0.5]{pictures/dialogflow_entities.png}
+\end{center}
+
+\end{frame}
+
+\subsection{Handling Intents}
+\subsubsection{What Type Question}
 \begin{frame}
 \frametitle{What Type Question}
 \infoForRightCorner{Name}
@@ -205,6 +254,7 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 \includegraphics[scale=0.5]{pictures/what_is_type_query.png}
 \end{center}
 \end{frame}
+\subsubsection{Difference Type Question}
 
 \begin{frame}
 \frametitle{Difference Type Question}
@@ -213,7 +263,7 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 \includegraphics[scale=0.4]{pictures/difference_type_query.png}
 \end{center}
 \end{frame}
-
+\subsubsection{List Type Question}
 \begin{frame}
 \frametitle{List Type Question}
 \infoForRightCorner{Name}
@@ -222,6 +272,7 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 \end{center}
 \end{frame}
 
+\subsubsection{Example Type Question}
 \begin{frame}
 \frametitle{Example Type Question}
 \infoForRightCorner{Name}
@@ -229,6 +280,8 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 \includegraphics[scale=0.5]{pictures/example_type_query.png}
 \end{center}
 \end{frame}
+
+\subsubsection{Step Type Question}
 
 \begin{frame}
 \frametitle{Step Type Question}
@@ -240,14 +293,14 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 
 %------------------------------------------------
 
-\section{Problems}
+\subsection{Problems}
 
 \begin{frame}
 \frametitle{Problems}
 \infoForRightCorner{Name}
 \begin{itemize}
-\item Changing namespaces of Graph DB
-\item No javascript library for GraphDB with authentication
+\item Changing namespaces of GraphDB
+\item No JavaScript library for GraphDB with authentication
 \end{itemize}
 \end{frame}
 
