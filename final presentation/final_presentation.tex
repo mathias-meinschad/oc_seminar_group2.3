@@ -59,9 +59,16 @@
 %\setbeamertemplate{navigation symbols}{} % To remove the navigation symbols from the bottom of all slides uncomment this line
 }
 
+%% Make top right box blank for each new frame
+\usepackage{tikz}
 \usepackage{graphicx} % Allows including images
 \usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
 \usepackage[utf8]{inputenc}
+
+\newcommand{\infoForRightCorner}[1]{%
+\tikz[remember picture,overlay]{
+    \node[anchor=north east, text=white] at (current page.north east) {#1};}
+    }
 
 %----------------------------------------------------------------------------------------
 %	TITLE PAGE
@@ -84,6 +91,7 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 
 \begin{frame}
 \frametitle{Overview} % Table of contents slide, comment this block out to remove it
+\infoForRightCorner{Name}
 \tableofcontents % Throughout your presentation, if you choose to use \section{} and \subsection{} commands, these will automatically be printed on this slide as an overview of your presentation
 \end{frame}
 
@@ -96,6 +104,7 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 
 \begin{frame}
 \frametitle{Overview}
+\infoForRightCorner{Name}
 \begin{center}
 \includegraphics[scale=0.35]{pictures/google-home.png} 
 \end{center}
@@ -109,6 +118,7 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 
 \begin{frame}
 \frametitle{Device Types \& Traits}
+\infoForRightCorner{Name}
 \begin{center}
 \includegraphics[scale=0.2]{pictures/state_commands.png} 
 \end{center}
@@ -124,6 +134,7 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 
 \begin{frame}
 \frametitle{Execution Path}
+\infoForRightCorner{Name}
 \begin{center}
 \includegraphics[scale=0.2]{pictures/execution-path.png}
 \end{center}
@@ -135,6 +146,7 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 
 \begin{frame}
 \frametitle{Intents}
+\infoForRightCorner{Name}
 \begin{center}
 \includegraphics[width=0.8\textwidth]{pictures/intent.png}
 
@@ -147,6 +159,7 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 
 \begin{frame}
 \frametitle{Entities}
+\infoForRightCorner{Name}
 \begin{center}
 \includegraphics[width=0.8\textwidth]{pictures/entities2.png}
 \end{center}
@@ -158,6 +171,7 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 
 \begin{frame}
 \frametitle{Architecture}
+\infoForRightCorner{Name}
 \begin{center}
 \includegraphics[width=\textwidth]{pictures/fulfillment_flow.png} 
 \end{center}
@@ -165,6 +179,7 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 
 \begin{frame}
 \frametitle{Architecture}
+\infoForRightCorner{Name}
 \begin{center}
 \includegraphics[width=\textwidth]{pictures/fulfillment_flow2.png} 
 \end{center}
@@ -173,6 +188,7 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 
 \begin{frame}
 \frametitle{Communication}
+\infoForRightCorner{Name}
 \begin{center}
 \includegraphics[scale=0.22]{pictures/communication_btw.png}
 \end{center}
@@ -184,6 +200,7 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 
 \begin{frame}
 \frametitle{What Type Question}
+\infoForRightCorner{Name}
 \begin{center}
 \includegraphics[scale=0.5]{pictures/what_is_type_query.png}
 \end{center}
@@ -191,6 +208,7 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 
 \begin{frame}
 \frametitle{Difference Type Question}
+\infoForRightCorner{Name}
 \begin{center}
 \includegraphics[scale=0.4]{pictures/difference_type_query.png}
 \end{center}
@@ -198,6 +216,7 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 
 \begin{frame}
 \frametitle{List Type Question}
+\infoForRightCorner{Name}
 \begin{center}
 \includegraphics[scale=0.5]{pictures/list_type_query.png}
 \end{center}
@@ -205,6 +224,7 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 
 \begin{frame}
 \frametitle{Example Type Question}
+\infoForRightCorner{Name}
 \begin{center}
 \includegraphics[scale=0.5]{pictures/example_type_query.png}
 \end{center}
@@ -212,6 +232,7 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 
 \begin{frame}
 \frametitle{Step Type Question}
+\infoForRightCorner{Name}
 \begin{center}
 \includegraphics[scale=0.5]{pictures/step_type_query.png}
 \end{center}
@@ -223,6 +244,7 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 
 \begin{frame}
 \frametitle{Problems}
+\infoForRightCorner{Name}
 \begin{itemize}
 \item Changing namespaces of Graph DB
 \item No javascript library for GraphDB with authentication
@@ -236,6 +258,7 @@ University of Innsbruck - SIT \\ % Your institution for the title page
 
 \begin{frame}
 \frametitle{Live Demo}
+\infoForRightCorner{Name}
 \begin{center}
 {\fontsize{30}{40}\selectfont Live Demo}
 \end{center}
