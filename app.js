@@ -144,14 +144,14 @@ function query_for_what_is_questions(parameter){
 				?Concept schema:name ?name.
 				OPTIONAL { ?Concept schema:description ?description . }
 				OPTIONAL { ?Concept kgbs:purpose ?purpose . }
-				filter (LCASE(?name) = LCASE("knowledge generation tool"))
+				filter (LCASE(?name) = LCASE("${parameter}"))
 			}
 			union 
 			{
 				?Concept schema:alternateName ?name.
 				OPTIONAL { ?Concept schema:description ?description . }
 				OPTIONAL { ?Concept kgbs:purpose ?purpose . }
-				filter (LCASE(?name) = LCASE("knowledge generation tool"))
+				filter (LCASE(?name) = LCASE("${parameter}"))
 			}
 		}
 	`});
