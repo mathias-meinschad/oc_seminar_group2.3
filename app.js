@@ -160,7 +160,7 @@ function query_for_what_is_questions(parameter){
 function query_for_difference_questions(first_parameter, second_parameter){
 	return querystring.stringify({query: `
 		PREFIX schema: <http://schema.org/>
-		PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
+		PREFIX kgbs: <http://knowledgegraphbook.ai/schema/>
 					
 		select ?description where { 
 			?Concept schema:name ?name
@@ -174,7 +174,7 @@ function query_for_difference_questions(first_parameter, second_parameter){
 function query_for_list_questions(parameter){
 	return querystring.stringify({query: `
 		PREFIX schema: <http://schema.org/>
-		PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
+		PREFIX kgbs: <http://knowledgegraphbook.ai/schema/>
 		PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 							
 		select ?description where { 
@@ -198,7 +198,7 @@ function query_for_list_questions(parameter){
 function query_for_step_questions(parameter){
 	return querystring.stringify({query: `
 		PREFIX schema: <http://schema.org/>
-		PREFIX kgbs: <http://www.knowledgegraphbook.ai/schema/>
+		PREFIX kgbs: <http://knowledgegraphbook.ai/schema/>
 							
 		select ?description where {
 			?Concept schema:name ?name .
